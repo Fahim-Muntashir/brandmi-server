@@ -2,7 +2,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
-import { User } from "../modules/model/user.model";
 import { generateTokens } from "../helpers/generateToken";
 import { catchAsync } from "../helpers/catchAsync";
 import { AppError } from "./globalErrorHanlde";
