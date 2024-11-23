@@ -1,8 +1,8 @@
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
 import { config } from ".";
-import { User } from "../modules/model/user.model";
 import { generateTokens } from "../helpers/generateToken";
+import { User } from "../modules/user/user.model";
 
 passport.use(
     new GoogleStrategy(

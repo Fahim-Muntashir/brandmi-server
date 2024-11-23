@@ -2,8 +2,8 @@
 import { Router } from 'express';
 import passport from 'passport';
 import '../../config/googleProvider'; // Ensure passport strategy is configured
-import { GoogleController } from '../controllers/googleLogin.contorller';
 import { config } from '../../config';
+import { GoogleController } from './google.controllers';
 
 const router = Router();
 

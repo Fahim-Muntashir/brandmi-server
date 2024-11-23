@@ -5,9 +5,11 @@ import cors from 'cors';
 import cookieParser from "cookie-parser"
 import mongoose from 'mongoose';
 import { config } from './config';
-import { UserRoute } from './modules/routes/user.route';
 import { errorHandler } from './middleware/globalErrorHanlde';
-import { GoogleRoute } from './modules/routes/google.route';
+import { UserRoute } from './modules/user/user.routes';
+import { GoogleRoute } from './modules/google/google.routes';
+import { AuthRoutes } from './modules/auth/auth.routes';
+
 const app: Application = express();
 
 
@@ -27,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 // Routes
 app.use("/api/user", UserRoute)
+app.use("/api/auth", AuthRoutes)
 app.use("/auth/google", GoogleRoute);
 
 // Health check endpoint
