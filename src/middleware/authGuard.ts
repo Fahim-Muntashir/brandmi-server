@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { User } from "../modules/model/user.model";
 import verifyAccessToken from "../helpers/veryfyAccessToken";
 import { AppError } from "./globalErrorHanlde";
 import { catchAsync } from "../helpers/catchAsync";
+import { User } from "../modules/user/user.model";
 
 
 
