@@ -8,7 +8,7 @@ const BuyerProfileSchema = new Schema<IBuyerProfile>({
     userId: { type: Schema.Types.ObjectId, required: true, ref: 'User ' }, // reference
     country: { type: String, required: true },
     companyName: { type: String, required: true },
-    age: { type: Number, required: true },
+    age: { type: Number, required: true, min: 18 },
     interests: { type: [String], required: true },
     phoneNumber: { type: Number, required: true },
     bio: { type: String, required: true },
