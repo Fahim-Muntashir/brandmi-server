@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Model, Document, FilterQuery } from "mongoose";
-import BuyerProfileModel from "../modules/buyerProfile/buyerProfile.models";
 
-export const demoModel = BuyerProfileModel.find({
+export interface IPaginationResult {
+    totalDocuments: number;
+    limitPage: number;
+    currentPage: number;
+    totalPage: number;
+    hasNextPage: boolean;
+    filterResult: number
 
-});
+}
 
 interface IQuey {
     searchTerm?: string;
@@ -14,6 +19,7 @@ interface IQuey {
     limit?: string;
     filterKey?: string;
     filterValue?: string;
+    filters?: Record<string, any>; // Add dynamic filters support
 }
 
 export class QueryBuilder<T extends Document> {
@@ -24,10 +30,11 @@ export class QueryBuilder<T extends Document> {
         this.model = model;
     }
 
+
     //    default value :
-    private queryObj: FilterQuery<T> = {};
+    private queryObj: Record<string, any> = {};
     private page: number = 1;
-    private limit: number = 10;
+    private limit: number = 2;
     private sortField: string | null = null;
     private sortOrder: 1 | -1 = 1;
     private projection: any = null;
@@ -39,6 +46,20 @@ export class QueryBuilder<T extends Document> {
         projectedField.forEach((field) => {
             this.projection[field] = 1;
         });
+        return this;
+    }
+
+
+    // Apply dynamic filters
+    filter(): this {
+
+        Object.entries(this.query).forEach(([key, value]) => {
+            // Validate if the filter key exists in the model's schema
+            if (this.model.schema.pathType(key) !== "adhocOrUndefined") {
+                this.queryObj[key] = value;
+            }
+        });
+
         return this;
     }
 
@@ -66,7 +87,7 @@ export class QueryBuilder<T extends Document> {
     }
 
 
-    pagination() {
+    pagination(): this {
         if (this.query.page) {
             this.page = parseInt(this.query.page)
         }
@@ -74,6 +95,7 @@ export class QueryBuilder<T extends Document> {
             this.limit = parseInt(this.query.limit)
 
         }
+        return this
     }
 
 
@@ -88,7 +110,7 @@ export class QueryBuilder<T extends Document> {
         return await queryOperation.exec()
     }
 
-    async metaData() {
+    async metaData(): Promise<IPaginationResult> {
         const totalDocuments = await this.model.countDocuments().exec()
         const filterResult = await this.model.countDocuments(this.queryObj).exec()
 

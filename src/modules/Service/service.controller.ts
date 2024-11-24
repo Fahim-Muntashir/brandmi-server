@@ -30,14 +30,16 @@ const getService = catchAsync(async (req: Request, res: Response) => {
 });
 
 // Get all Services
-const getAllServices = catchAsync(async (_req: Request, res: Response) => {
-    const services = await ServiceService.getAllServices();
+const getAllServices = catchAsync(async (req: Request, res: Response) => {
+    const query = req.query
+    const services = await ServiceService.getAllServices(query);
 
     sendResponse(res, {
         status: 200,
         success: true,
-        message: "All services retrieved successfully",
-        data: services,
+        message: "All services retrieved successfully!!",
+        data: services.data,
+        metaData: services.metaData
     });
 });
 
