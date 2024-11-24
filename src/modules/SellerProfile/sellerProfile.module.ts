@@ -3,7 +3,7 @@ import { ISellerProfile } from './sellerProfile.interface';
 
 const sellerProfileSchema = new Schema<ISellerProfile>(
   {
-    seller: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: 'User', // Reference to the User model
       required: true,

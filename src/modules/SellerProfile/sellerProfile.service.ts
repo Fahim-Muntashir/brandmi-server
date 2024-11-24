@@ -2,9 +2,9 @@ import { ISellerProfile } from "./sellerProfile.interface";
 import { SellerProfile } from "./sellerProfile.module";
 
  const createSellerProfile = async (data: ISellerProfile) => {
-  const { seller } = data;
+  const { userId } = data;
   // Check if the profile already exists
-  const existingProfile = await SellerProfile.findOne({ seller });
+  const existingProfile = await SellerProfile.findOne({ userId });
   if (existingProfile) {
     throw new Error('Profile already exists for this seller');
   }
@@ -38,7 +38,9 @@ const getSellerProfile = async (sellerId: string) => {
 
 
 
- const updateSellerProfile = async (sellerId: string, updates: ISellerProfile) => {
+const updateSellerProfile = async (sellerId: string, updates: ISellerProfile) => {
+     
+    console.log(updates,sellerId);
   const updatedProfile = await SellerProfile.findOneAndUpdate(
     { seller: sellerId },
     { ...updates, updatedAt: Date.now() },
