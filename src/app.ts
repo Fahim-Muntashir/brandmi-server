@@ -9,6 +9,7 @@ import { errorHandler } from './middleware/globalErrorHanlde';
 import { UserRoute } from './modules/user/user.routes';
 import { GoogleRoute } from './modules/google/google.routes';
 import { AuthRoutes } from './modules/auth/auth.routes';
+import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
 
 const app: Application = express();
 
@@ -31,6 +32,7 @@ app.use("/api/user", UserRoute)
 app.use("/api/auth", AuthRoutes)
 app.use("/auth/google", GoogleRoute);
 app.use("/buyer", GoogleRoute);
+app.use("/api/v1/sellerprofiles",SellerProfileRoutes)
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {
