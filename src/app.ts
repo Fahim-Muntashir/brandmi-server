@@ -14,24 +14,24 @@ import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route
 const app: Application = express();
 
 
-
+const corsOptions = {
+    origin: config.FRONTED_HOST,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}
 
 // Middleware
-app.use(
-    cors({
-        origin: "http://localhost:3000", // Your Next.js frontend URL
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true, // Allow cookies to be sent
-    })
-);
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+
 // Routes
 app.use("/api/user", UserRoute)
 app.use("/api/auth", AuthRoutes)
 app.use("/auth/google", GoogleRoute);
+app.use("/buyer", GoogleRoute);
 app.use("/api/v1/sellerprofiles",SellerProfileRoutes)
 
 // Health check endpoint
