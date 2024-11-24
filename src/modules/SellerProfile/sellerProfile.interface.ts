@@ -9,7 +9,7 @@ interface SocialLinks {
 
 // Interface for Seller Profile
 export interface ISellerProfile extends Document {
-  seller: Types.ObjectId; // Reference to the User model
+  userId: Types.ObjectId; // Reference to the User model
   country: string;
   company: string;
   age: number | null;
