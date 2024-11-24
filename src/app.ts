@@ -13,24 +13,24 @@ import { AuthRoutes } from './modules/auth/auth.routes';
 const app: Application = express();
 
 
-
+const corsOptions = {
+    origin: config.FRONTED_HOST,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}
 
 // Middleware
-app.use(
-    cors({
-        origin: "http://localhost:3000", // Your Next.js frontend URL
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        credentials: true, // Allow cookies to be sent
-    })
-);
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+
 // Routes
 app.use("/api/user", UserRoute)
 app.use("/api/auth", AuthRoutes)
 app.use("/auth/google", GoogleRoute);
+app.use("/buyer", GoogleRoute);
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {
