@@ -1,25 +1,38 @@
 import { Request, Response } from 'express';
 import { SellerProfileService } from './sellerProfile.service';
+import { catchAsync } from '../../helpers/catchAsync';
+import { sendResponse } from '../../helpers/sendResponse';
 
 
- const createSellerProfile = async (req: Request, res: Response) => {
-  try {
-    const sellerProfile = await SellerProfileService.createSellerProfile(req.body);
-    res.status(201).json(sellerProfile);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+ const createSellerProfile =catchAsync(async (req: Request, res: Response) => {
+     const sellerProfile = await SellerProfileService.createSellerProfile(req.body);
+     
+     console.log(sellerProfile);
+  sendResponse(res, {
+        status: 201,
+        success: true,
+        message: "Seller Profile Data Create Successfully",
+    })
+     
+});
 
- const getSellerProfile = async (req: Request, res: Response) => {
-  try {
-    const { sellerId } = req.params;
-    const sellerProfile = await SellerProfileService.getSellerProfile(sellerId);
-    res.status(200).json(sellerProfile);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
+ const getSellerProfile =catchAsync(async (req: Request, res: Response) => {
+     const { sellerId } = req.params;
+     console.log(sellerId);
+      const sellerProfile = await SellerProfileService.getSellerProfile(sellerId);
+    
+     
+    sendResponse(res, {
+        status: 201,
+        success: true,
+        message: "Seller Profile Data Get Successfully",
+        data: {
+            sellerProfile
+        },
+    })
+      
+});
+
 
  const getAllSellerProfiles = async (_req: Request, res: Response) => {
   try {
@@ -29,6 +42,8 @@ import { SellerProfileService } from './sellerProfile.service';
     res.status(500).json({ message: 'Error fetching seller profiles', error });
   }
 };
+
+
 
  const updateSellerProfile = async (req: Request, res: Response) => {
   try {

@@ -15,10 +15,15 @@ import { SellerProfile } from "./sellerProfile.module";
   return await sellerProfile.save();
 };
 
- const getSellerProfile = async (sellerId: string) => {
-  const sellerProfile = await SellerProfile.findOne({ seller: sellerId })
-    .populate('services')
-    .populate('portfolio');
+
+
+
+const getSellerProfile = async (sellerId: string) => {
+
+    const sellerProfile = await SellerProfile.findOne({ seller: sellerId })
+    // Task: When service and portfolio model are available then add this
+    // .populate('services')
+    // .populate('portfolio');
 
   if (!sellerProfile) {
     throw new Error('Seller profile not found');
@@ -26,6 +31,12 @@ import { SellerProfile } from "./sellerProfile.module";
 
   return sellerProfile;
 };
+
+
+
+
+
+
 
  const getAllSellerProfiles = async () => {
   return await SellerProfile.find().populate('services').populate('portfolio');

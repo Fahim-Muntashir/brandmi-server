@@ -18,4 +18,4 @@ router.put('/:sellerId', SellerProfileController.updateSellerProfile);
 // Soft delete SellerProfile
 router.delete('/:sellerId', SellerProfileController.deleteSellerProfile);
 
-export default router;
+export const SellerProfileRoutes = router;
