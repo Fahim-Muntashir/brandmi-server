@@ -17,16 +17,32 @@ const getService = async (serviceId: string) => {
 };
 
 const getAllServices = async (query: any) => {
+
+    const projection = {
+        title: 1,
+        category: 1,
+        package: {
+            $map: {
+                input: "$packages",
+                as: "pkg",
+                in: {
+                    type: "$$pkg.type",
+                    price: "$$pkg.price"
+                }
+            }
+        }
+    }
+
+
     const queryHandler = new AggregationQueryBuilder<IService>(query, Service);
 
-    // Build the aggregation pipeline
     queryHandler
-        .search(["title"]) // Specify searchable fields
-        .filter() // Apply general filters
-        .filterByPackagePrice() // Handle filtering within nested arrays
-        .sort() // Apply sorting
-        .pagination(); // Apply pagination
-
+        .search(["title"])
+        .filter()
+        .filterByPackagePrice()
+        .sort()
+        .pagination()
+        .applyProject(projection)
     const services = await queryHandler.execute();
     const metaData = await queryHandler.metaData();
 

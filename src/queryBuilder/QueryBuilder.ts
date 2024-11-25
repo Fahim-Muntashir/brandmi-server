@@ -31,17 +31,27 @@ export class AggregationQueryBuilder<T extends Document> {
         this.query = query;
         this.model = model;
     }
+    applyProject(projection: any = {}): this {
+
+        this.aggregationPipeline.push(
+            {
+                $project: projection
+            }
+        );
+        return this
+
+    }
 
     // Apply filters
     filter(): this {
-        const copy = { ...this.query } // reference of main query
+        const queryRef = { ...this.query } // reference of main query
         const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price"];
-        excludedFields.forEach(field => delete copy[field as keyof IQuery]);
+        excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
         const matchConditions: any[] = [];
 
         // Handle general filters
-        if (copy) {
-            Object.entries(copy).forEach(([key, value]) => {
+        if (queryRef) {
+            Object.entries(queryRef).forEach(([key, value]) => {
                 matchConditions.push({ [key]: value });
             });
         }
