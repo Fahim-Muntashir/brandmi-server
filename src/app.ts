@@ -33,8 +33,8 @@ app.use("/api/user", UserRoute)
 app.use("/api/auth", AuthRoutes)
 app.use("/auth/google", GoogleRoute);
 app.use("/buyer", GoogleRoute);
-app.use("/api/v1/sellerprofiles",SellerProfileRoutes)
-app.use("/api/v1/services/",ServiceRoutes)
+app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
+app.use("/api/v1/services", ServiceRoutes)
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {

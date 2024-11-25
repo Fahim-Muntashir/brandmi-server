@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { QueryBuilder } from '../../queryBuilder/QueryBuilder';
 import { IService } from './service.interface';
 import { Service } from './service.module';
 
@@ -14,8 +16,14 @@ const getService = async (serviceId: string) => {
     return service;
 };
 
-const getAllServices = async () => {
-    return await Service.find();
+const getAllServices = async (query: any) => {
+    const queryHandler = new QueryBuilder<IService>(query, Service)
+    const services = await queryHandler.search([]).filter().pagination().sort().applyProjections([]).execute()
+    const metaData = await queryHandler.metaData()
+    return {
+        data: services,
+        metaData: metaData
+    }
 };
 
 const updateService = async (serviceId: string, updates: Partial<IService>) => {
