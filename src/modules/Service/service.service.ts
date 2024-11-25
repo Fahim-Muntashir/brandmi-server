@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { QueryBuilder } from '../../queryBuilder/QueryBuilder';
+import { AggregationQueryBuilder } from '../../queryBuilder/QueryBuilder';
 import { IService } from './service.interface';
 import { Service } from './service.module';
 
@@ -17,14 +17,25 @@ const getService = async (serviceId: string) => {
 };
 
 const getAllServices = async (query: any) => {
-    const queryHandler = new QueryBuilder<IService>(query, Service)
-    const services = await queryHandler.search([]).filter().pagination().sort().applyProjections([]).execute()
-    const metaData = await queryHandler.metaData()
+    const queryHandler = new AggregationQueryBuilder<IService>(query, Service);
+
+    // Build the aggregation pipeline
+    queryHandler
+        .search(["title"]) // Specify searchable fields
+        .filter() // Apply general filters
+        .filterByPackagePrice() // Handle filtering within nested arrays
+        .sort() // Apply sorting
+        .pagination(); // Apply pagination
+
+    const services = await queryHandler.execute();
+    const metaData = await queryHandler.metaData();
+
     return {
         data: services,
-        metaData: metaData
-    }
+        metaData: metaData,
+    };
 };
+
 
 const updateService = async (serviceId: string, updates: Partial<IService>) => {
     const updatedService = await Service.findByIdAndUpdate(
