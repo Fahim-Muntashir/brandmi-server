@@ -21,16 +21,8 @@ const getAllServices = async (query: any) => {
     const projection = {
         title: 1,
         category: 1,
-        package: {
-            $map: {
-                input: "$packages",
-                as: "pkg",
-                in: {
-                    type: "$$pkg.type",
-                    price: "$$pkg.price"
-                }
-            }
-        }
+        description: 1,
+        packages: 1
     }
 
 
