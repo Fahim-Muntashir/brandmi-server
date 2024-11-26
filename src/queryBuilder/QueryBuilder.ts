@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Model, Document, FilterQuery } from "mongoose";
+import { Model, Document } from "mongoose";
 
 export interface IPaginationResult {
     totalDocuments: number;
@@ -7,125 +7,135 @@ export interface IPaginationResult {
     currentPage: number;
     totalPage: number;
     hasNextPage: boolean;
-    filterResult: number
-
+    filterResult: number;
 }
 
-interface IQuey {
+interface IQuery {
     searchTerm?: string;
     sortField?: string;
     sortOrder?: "asc" | "desc";
     page?: string;
     limit?: string;
-    filterKey?: string;
-    filterValue?: string;
-    filters?: Record<string, any>; // Add dynamic filters support
+    [key: string]: any;
+
 }
 
-export class QueryBuilder<T extends Document> {
+export class AggregationQueryBuilder<T extends Document> {
     private model: Model<T>;
-    private query: IQuey;
-    constructor(query: IQuey, model: Model<T>) {
+    private query: IQuery;
+    private aggregationPipeline: any[] = [];
+    private page: number = 1;
+    private limit: number = 10;
+
+    constructor(query: IQuery, model: Model<T>) {
         this.query = query;
         this.model = model;
     }
+    applyProject(projection: any = {}): this {
 
-
-    //    default value :
-    private queryObj: Record<string, any> = {};
-    private page: number = 1;
-    private limit: number = 2;
-    private sortField: string | null = null;
-    private sortOrder: 1 | -1 = 1;
-    private projection: any = null;
-
-    // Add projections to limit which fields are retrieved from the documents
-
-    applyProjections(projectedField: string[]): this {
-        this.projection = {};
-        projectedField.forEach((field) => {
-            this.projection[field] = 1;
-        });
-        return this;
-    }
-
-
-    // Apply dynamic filters
-    filter(): this {
-
-        Object.entries(this.query).forEach(([key, value]) => {
-            // Validate if the filter key exists in the model's schema
-            if (this.model.schema.pathType(key) !== "adhocOrUndefined") {
-                this.queryObj[key] = value;
+        this.aggregationPipeline.push(
+            {
+                $project: projection
             }
-        });
-
-        return this;
-    }
-
-    search(searchableFields: (keyof T | string)[]) {
-        if (this.query.searchTerm) {
-            this.queryObj.$or = searchableFields.map((field) => {
-                return {
-                    [field]: {
-                        $regex: this.query.searchTerm,
-                        $options: "i", // Note the lowercase "options" for case-insensitive search
-                    },
-                };
-            }) as FilterQuery<T>[];
-        }
-        return this;
-    }
-
-    sort(): this {
-
-        if (this.query.sortField && this.query.sortOrder) {
-            this.sortField = this.query.sortField
-            this.sortOrder = this.query.sortOrder === "desc" ? -1 : 1
-        }
+        );
         return this
+
     }
 
+    // Apply filters
+    filter(): this {
+        const queryRef = { ...this.query } // reference of main query
+        const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price"];
+        excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
+        const matchConditions: any[] = [];
 
+        // Handle general filters
+        if (queryRef) {
+            Object.entries(queryRef).forEach(([key, value]) => {
+                matchConditions.push({ [key]: value });
+            });
+        }
+
+        // Combine conditions with $and if necessary
+        if (matchConditions.length > 0) {
+            this.aggregationPipeline.push({ $match: { $and: matchConditions } });
+        }
+
+        return this;
+    }
+
+    // Apply search
+    search(searchableFields: (keyof T | string)[]): this {
+        if (this.query.searchTerm) {
+            const searchConditions = searchableFields.map((field) => ({
+                [field]: { $regex: this.query.searchTerm, $options: "i" },
+            }));
+            this.aggregationPipeline.push({ $match: { $or: searchConditions } });
+        }
+        return this;
+    }
+
+    filterByPackagePrice(): this {
+        if (this.query.price) {
+            const price = parseInt(this.query.price, 10); // convert into  number;
+            this.aggregationPipeline.push(
+                {
+                    $addFields: {
+                        packages: {
+                            $filter: {
+                                input: "$packages",
+                                as: "package",
+                                cond: { $eq: ["$$package.price", price] },
+                            },
+                        },
+                    },
+                },
+            );
+        }
+        return this;
+    }
+    // Apply sorting
+    sort(): this {
+        if (this.query.sortField && this.query.sortOrder) {
+            const sortOrder = this.query.sortOrder === "desc" ? -1 : 1;
+            this.aggregationPipeline.push({ $sort: { [this.query.sortField]: sortOrder } });
+        }
+        return this;
+    }
+
+    // Apply pagination
     pagination(): this {
         if (this.query.page) {
-            this.page = parseInt(this.query.page)
+            this.page = parseInt(this.query.page, 10);
         }
         if (this.query.limit) {
-            this.limit = parseInt(this.query.limit)
-
+            this.limit = parseInt(this.query.limit, 10);
         }
-        return this
+        const skip = (this.page - 1) * this.limit;
+        this.aggregationPipeline.push({ $skip: skip }, { $limit: this.limit });
+        return this;
     }
 
-
+    // Execute the aggregation pipeline
     async execute(): Promise<T[]> {
-        const skip = (this.page - 1) * this.limit
-        const queryOperation = this.model.find(this.queryObj, this.projection).skip(skip).limit(this.limit)
-        if (this.sortField) {
-            queryOperation.sort({
-                [this.sortField]: this.sortOrder
-            })
-        }
-        return await queryOperation.exec()
+        return await this.model.aggregate(this.aggregationPipeline).exec();
     }
 
+    // Generate metadata for pagination
     async metaData(): Promise<IPaginationResult> {
-        const totalDocuments = await this.model.countDocuments().exec()
-        const filterResult = await this.model.countDocuments(this.queryObj).exec()
-
-        // 3. Calculate total pages based on filtered results
-        const totalPage = Math.ceil(totalDocuments / this.limit);
+        const totalDocuments = await this.model.countDocuments().exec();
+        const filteredPipeline = [...this.aggregationPipeline];
+        filteredPipeline.push({ $count: "filterResult" });
+        const filterResult = (await this.model.aggregate(filteredPipeline).exec())[0]?.filterResult || 0;
+        const totalPage = Math.ceil(filterResult / this.limit);
         const hasNextPage = this.page < totalPage;
         return {
-            totalDocuments,             // Total documents after filter is applied
-            filterResult,         // Total documents in the whole collection
-            limitPage: this.limit,      // The limit (documents per page)
-            currentPage: this.page,     // Current page number
-            totalPage,                  // Total number of pages based on filtered documents
-            hasNextPage,                // Whether there are more pages to display
+            totalDocuments,
+            filterResult,
+            limitPage: this.limit,
+            currentPage: this.page,
+            totalPage,
+            hasNextPage,
         };
     }
-
-
 }
