@@ -26,6 +26,8 @@ export class AggregationQueryBuilder<T extends Document> {
     private aggregationPipeline: any[] = [];
     private page: number = 1;
     private limit: number = 10;
+    private sortField = "createdAt"
+    private sortOrder = -1
 
     constructor(query: IQuery, model: Model<T>) {
         this.query = query;
@@ -45,7 +47,7 @@ export class AggregationQueryBuilder<T extends Document> {
     // Apply filters
     filter(): this {
         const queryRef = { ...this.query } // reference of main query
-        const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price"];
+        const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price", "maxPrice", "minPrice"];
         excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
         const matchConditions: any[] = [];
 
@@ -76,29 +78,39 @@ export class AggregationQueryBuilder<T extends Document> {
     }
 
     filterByPackagePrice(): this {
-        if (this.query.price) {
-            const price = parseInt(this.query.price, 10); // convert into  number;
+        if (this.query.minPrice && this.query.maxPrice) {
+
+            const minPrice = Number(this.query.minPrice);
+            const maxPrice = Number(this.query.maxPrice);
+
             this.aggregationPipeline.push(
+                { $unwind: "$packages" },
                 {
-                    $addFields: {
-                        packages: {
-                            $filter: {
-                                input: "$packages",
-                                as: "package",
-                                cond: { $eq: ["$$package.price", price] },
-                            },
-                        },
-                    },
+                    $match: {
+                        "packages.price": {
+                            $gte: minPrice,
+                            $lte: maxPrice
+                        }
+                    }
                 },
+
+
             );
         }
         return this;
     }
+
+
+
     // Apply sorting
     sort(): this {
         if (this.query.sortField && this.query.sortOrder) {
+
             const sortOrder = this.query.sortOrder === "desc" ? -1 : 1;
             this.aggregationPipeline.push({ $sort: { [this.query.sortField]: sortOrder } });
+        } else {
+            this.aggregationPipeline.push({ $sort: { [this.sortField]: this.sortOrder } });
+
         }
         return this;
     }
@@ -118,6 +130,8 @@ export class AggregationQueryBuilder<T extends Document> {
 
     // Execute the aggregation pipeline
     async execute(): Promise<T[]> {
+        console.log(this.query);
+
         return await this.model.aggregate(this.aggregationPipeline).exec();
     }
 

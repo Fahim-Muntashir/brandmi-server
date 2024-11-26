@@ -11,6 +11,7 @@ import { GoogleRoute } from './modules/google/google.routes';
 import { AuthRoutes } from './modules/auth/auth.routes';
 import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
 import { ServiceRoutes } from './modules/Service/service.route';
+import { OrderRoutes } from './modules/Order/order.routes';
 
 const app: Application = express();
 
@@ -29,10 +30,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
 // Routes
-app.use("/api/user", UserRoute)
-app.use("/api/auth", AuthRoutes)
-app.use("/auth/google", GoogleRoute);
-app.use("/buyer", GoogleRoute);
+app.use("/api/v1/user", UserRoute)
+app.use("/api/v1/auth", AuthRoutes)
+app.use("/api/v1/auth/google", GoogleRoute);
+app.use("/api/v1/buyer", GoogleRoute);
+app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
 app.use("/api/v1/services", ServiceRoutes)
 

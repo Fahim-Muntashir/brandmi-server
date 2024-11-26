@@ -15,7 +15,8 @@ export const config = {
     REFRESH_TOKEN_EXPIRED: process.env.REFRESH_TOKEN_EXPIRED,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.callbackURL
+    callbackURL: process.env.callbackURL,
+    payment_secret_key: process.env.STRIPE_KEY
 
 
 };
