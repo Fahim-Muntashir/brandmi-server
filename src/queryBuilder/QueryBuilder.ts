@@ -25,7 +25,7 @@ export class AggregationQueryBuilder<T extends Document> {
     private query: IQuery;
     private aggregationPipeline: any[] = [];
     private page: number = 1;
-    private limit: number = 5;
+    private limit: number = 10;
     private sortField = "createdAt"
     private sortOrder = -1
 
@@ -45,26 +45,62 @@ export class AggregationQueryBuilder<T extends Document> {
     }
 
     // Apply filters
-    // filter(): this {
-    //     const queryRef = { ...this.query } // reference of main query
-    //     const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price", "maxPrice", "minPrice"];
-    //     excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
-    //     const matchConditions: any[] = [];
+    filter(filterableFiled: string[]): this {
 
-    //     // Handle general filters
-    //     if (queryRef) {
-    //         Object.entries(queryRef).forEach(([key, value]) => {
-    //             matchConditions.push({ [key]: value });
-    //         });
-    //     }
 
-    //     // Combine conditions with $and if necessary
-    //     if (matchConditions.length > 0) {
-    //         this.aggregationPipeline.push({ $match: { $and: matchConditions } });
-    //     }
+        if (this.query) {
+            Object.entries(this.query).forEach(([key, value]) => {
+                if (filterableFiled.includes(key)) {
+                    this.aggregationPipeline.push({
+                        $match: {
 
-    //     return this;
-    // }
+                            [key]: value
+
+                        }
+                    })
+                }
+            })
+        }
+        if (this.query.minPrice && this.query.maxPrice) {
+            const minPrice = Number(this.query.minPrice);
+            const maxPrice = Number(this.query.maxPrice);
+
+            this.aggregationPipeline.push(
+                // Unwind the packages array
+                { $unwind: "$packages" },
+
+                // Match the packages within the minPrice and maxPrice range
+                {
+                    $match: {
+                        "packages.price": {
+                            $gte: minPrice,
+                            $lte: maxPrice
+                        }
+                    }
+                },
+
+
+            );
+        }
+        if (this.query.type) {
+            console.log(this.query.type);
+            this.aggregationPipeline.push(
+                // Unwind the packages array
+                { $unwind: "$packages" },
+
+                // Match the packages within the minPrice and maxPrice range
+                {
+                    $match: {
+                        "packages.type": this.query.type
+                    }
+                },
+
+
+            );
+        }
+
+        return this
+    }
 
     // Apply search
     search(searchableFields: (keyof T | string)[]): this {
@@ -93,23 +129,6 @@ export class AggregationQueryBuilder<T extends Document> {
                             $gte: minPrice,
                             $lte: maxPrice
                         }
-                    }
-                },
-
-
-            );
-        }
-        if (this.query.type) {
-
-
-            this.aggregationPipeline.push(
-                // Unwind the packages array
-                { $unwind: "$packages" },
-
-                // Match the packages within the minPrice and maxPrice range
-                {
-                    $match: {
-                        "packages.type": this.query.type
                     }
                 },
 

@@ -30,8 +30,7 @@ const getAllServices = async (query: Record<string, unknown>) => {
 
     queryHandler
         .search(["title"])
-
-        .filterByPackagePrice()
+        .filter(["title"])
         .sort()
         .pagination()
         .applyProject(projection)
