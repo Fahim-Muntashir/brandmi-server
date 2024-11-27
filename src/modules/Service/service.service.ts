@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { AppError } from '../../middleware/globalErrorHanlde';
 import { AggregationQueryBuilder } from '../../queryBuilder/QueryBuilder';
 import { IService } from './service.interface';
 import { Service } from './service.module';
@@ -11,13 +12,12 @@ const createService = async (data: IService) => {
 const getService = async (serviceId: string) => {
     const service = await Service.findById(serviceId);
     if (!service) {
-        throw new Error('Service not found');
+        throw new AppError('There is no service found', 401);
     }
     return service;
 };
 
-const getAllServices = async (query: any) => {
-
+const getAllServices = async (query: Record<string, unknown>) => {
     const projection = {
         title: 1,
         category: 1,
@@ -30,7 +30,7 @@ const getAllServices = async (query: any) => {
 
     queryHandler
         .search(["title"])
-        .filter()
+
         .filterByPackagePrice()
         .sort()
         .pagination()

@@ -25,7 +25,7 @@ export class AggregationQueryBuilder<T extends Document> {
     private query: IQuery;
     private aggregationPipeline: any[] = [];
     private page: number = 1;
-    private limit: number = 10;
+    private limit: number = 5;
     private sortField = "createdAt"
     private sortOrder = -1
 
@@ -45,26 +45,26 @@ export class AggregationQueryBuilder<T extends Document> {
     }
 
     // Apply filters
-    filter(): this {
-        const queryRef = { ...this.query } // reference of main query
-        const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price", "maxPrice", "minPrice"];
-        excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
-        const matchConditions: any[] = [];
+    // filter(): this {
+    //     const queryRef = { ...this.query } // reference of main query
+    //     const excludedFields = ['searchTerm', 'sortField', 'sortOrder', 'page', 'limit', "price", "maxPrice", "minPrice"];
+    //     excludedFields.forEach(field => delete queryRef[field as keyof IQuery]);
+    //     const matchConditions: any[] = [];
 
-        // Handle general filters
-        if (queryRef) {
-            Object.entries(queryRef).forEach(([key, value]) => {
-                matchConditions.push({ [key]: value });
-            });
-        }
+    //     // Handle general filters
+    //     if (queryRef) {
+    //         Object.entries(queryRef).forEach(([key, value]) => {
+    //             matchConditions.push({ [key]: value });
+    //         });
+    //     }
 
-        // Combine conditions with $and if necessary
-        if (matchConditions.length > 0) {
-            this.aggregationPipeline.push({ $match: { $and: matchConditions } });
-        }
+    //     // Combine conditions with $and if necessary
+    //     if (matchConditions.length > 0) {
+    //         this.aggregationPipeline.push({ $match: { $and: matchConditions } });
+    //     }
 
-        return this;
-    }
+    //     return this;
+    // }
 
     // Apply search
     search(searchableFields: (keyof T | string)[]): this {
@@ -79,8 +79,6 @@ export class AggregationQueryBuilder<T extends Document> {
 
     filterByPackagePrice(): this {
         if (this.query.minPrice && this.query.maxPrice) {
-            console.log("hi");
-
             const minPrice = Number(this.query.minPrice);
             const maxPrice = Number(this.query.maxPrice);
 
@@ -101,19 +99,38 @@ export class AggregationQueryBuilder<T extends Document> {
 
             );
         }
+        if (this.query.type) {
+
+
+            this.aggregationPipeline.push(
+                // Unwind the packages array
+                { $unwind: "$packages" },
+
+                // Match the packages within the minPrice and maxPrice range
+                {
+                    $match: {
+                        "packages.type": this.query.type
+                    }
+                },
+
+
+            );
+        }
         return this;
     }
 
     // Apply sorting
     sort(): this {
         if (this.query.sortField && this.query.sortOrder) {
+            this.sortField = this.query.sortField
+            this.sortOrder = this.query.sortOrder === "desc" ? -1 : 1;
 
-            const sortOrder = this.query.sortOrder === "desc" ? -1 : 1;
-            this.aggregationPipeline.push({ $sort: { [this.query.sortField]: sortOrder } });
-        } else {
-            this.aggregationPipeline.push({ $sort: { [this.sortField]: this.sortOrder } });
-
+            // this.aggregationPipeline.push({ $sort: { [this.query.sortField]: sortOrder } });
         }
+        //  else {
+        //     this.aggregationPipeline.push({ $sort: { [this.sortField]: this.sortOrder } });
+
+        // }
         return this;
     }
 
@@ -125,16 +142,16 @@ export class AggregationQueryBuilder<T extends Document> {
         if (this.query.limit) {
             this.limit = parseInt(this.query.limit, 10);
         }
-        const skip = (this.page - 1) * this.limit;
-        this.aggregationPipeline.push({ $skip: skip }, { $limit: this.limit });
+        // const skip = (this.page - 1) * this.limit;
+        // this.aggregationPipeline.push({ $skip: skip }, { $limit: this.limit });
         return this;
     }
 
     // Execute the aggregation pipeline
     async execute(): Promise<T[]> {
-        console.log(this.query);
+        const skip = (this.page - 1) * this.limit;
 
-        return await this.model.aggregate(this.aggregationPipeline).exec();
+        return await this.model.aggregate(this.aggregationPipeline).limit(this.limit).skip(skip).sort({ [this.sortField]: this.sortOrder as any })
     }
 
     // Generate metadata for pagination
