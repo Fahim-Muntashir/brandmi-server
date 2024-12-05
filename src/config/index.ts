@@ -17,6 +17,4 @@ export const config = {
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.callbackURL,
     payment_secret_key: process.env.STRIPE_KEY
-
-
 };

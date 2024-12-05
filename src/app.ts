@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/app.ts
 import express, { Application, Request, Response } from 'express';
@@ -12,6 +13,7 @@ import { AuthRoutes } from './modules/auth/auth.routes';
 import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
 import { ServiceRoutes } from './modules/Service/service.route';
 import { OrderRoutes } from './modules/Order/order.routes';
+import Stripe from 'stripe';
 
 const app: Application = express();
 
@@ -29,6 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
+
 // Routes
 app.use("/api/v1/user", UserRoute)
 app.use("/api/v1/auth", AuthRoutes)
@@ -37,6 +40,8 @@ app.use("/api/v1/buyer", GoogleRoute);
 app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
 app.use("/api/v1/services", ServiceRoutes)
+
+const stripeInstance=new Stripe(config.payment_secret_key as string)
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {
