@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
 import { UserServices } from "./user.services";
-import { AppError } from "../../middleware/globalErrorHanlde";
+import { AppError } from "../../middleware/globalErrorHandler";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 

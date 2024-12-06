@@ -144,12 +144,9 @@ export class AggregationQueryBuilder<T extends Document> {
             this.sortField = this.query.sortField
             this.sortOrder = this.query.sortOrder === "desc" ? -1 : 1;
 
-            // this.aggregationPipeline.push({ $sort: { [this.query.sortField]: sortOrder } });
-        }
-        //  else {
-        //     this.aggregationPipeline.push({ $sort: { [this.sortField]: this.sortOrder } });
 
-        // }
+        }
+
         return this;
     }
 
@@ -161,8 +158,7 @@ export class AggregationQueryBuilder<T extends Document> {
         if (this.query.limit) {
             this.limit = parseInt(this.query.limit, 10);
         }
-        // const skip = (this.page - 1) * this.limit;
-        // this.aggregationPipeline.push({ $skip: skip }, { $limit: this.limit });
+
         return this;
     }
 

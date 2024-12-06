@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { config } from "../../config";
 import { generateTokens } from "../../helpers/generateToken";
-import { AppError } from "../../middleware/globalErrorHanlde";
+import { AppError } from "../../middleware/globalErrorHandler";
 import { IAuth } from "./auth.mdel";
 import { User } from "../user/user.model";
 
@@ -9,7 +9,7 @@ const loginUser = async (payload: IAuth, res: Response) => {
     const { email, password } = payload;
 
     //  validate user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, isvaryfied: true });
     if (!user || !user.password) {
         throw new AppError("Invalid credentials", 401)
     }

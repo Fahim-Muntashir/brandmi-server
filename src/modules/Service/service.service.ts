@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AppError } from '../../middleware/globalErrorHanlde';
+import { AppError } from '../../middleware/globalErrorHandler';
 import { AggregationQueryBuilder } from '../../queryBuilder/QueryBuilder';
 import { IService } from './service.interface';
 import { Service } from './service.module';
@@ -21,7 +21,6 @@ const getAllServices = async (query: Record<string, unknown>) => {
     const projection = {
         title: 1,
         category: 1,
-        description: 1,
         packages: 1
     }
 

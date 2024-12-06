@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import verifyAccessToken from "../helpers/veryfyAccessToken";
-import { AppError } from "./globalErrorHanlde";
+import { AppError } from "./globalErrorHandler";
 import { catchAsync } from "../helpers/catchAsync";
 import { User } from "../modules/user/user.model";
 

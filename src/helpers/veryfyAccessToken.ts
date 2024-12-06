@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config";
-import { AppError } from "../middleware/globalErrorHanlde";
+import { AppError } from "../middleware/globalErrorHandler";
 import { JWTPayload } from "./generateToken";
 
 const verifyAccessToken = (token: string): JWTPayload => {
