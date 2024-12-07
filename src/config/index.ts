@@ -20,7 +20,5 @@ export const config = {
     EMAIL_PORT: process.env.EMAIL_PORT,
     EMAIL_USER: process.env.EMAIL_USER,
     EMAIL_PASS: process.env.EMAIL_PASS,
-
-
-
+    payment_secret_key: process.env.STRIPE_KEY
 };
