@@ -1,7 +1,7 @@
 import { config } from "../config";
 import jwt from "jsonwebtoken"
 import { JWTPayload } from "./generateToken";
-import { AppError } from "../middleware/globalErrorHanlde";
+import { AppError } from "../middleware/globalErrorHandler";
 import { User } from "../modules/user/user.model";
 export const verifyRefreshToken = async (token: string): Promise<JWTPayload> => {
     try {

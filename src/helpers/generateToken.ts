@@ -11,7 +11,7 @@ export interface JWTPayload {
 }
 
 interface IGenerateToken {
-    user: JWTPayload,
+    user: JWTPayload | any,
     secretToken: string;
     expiredDate: string
 }

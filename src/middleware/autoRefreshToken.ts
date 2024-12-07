@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import { config } from "../config";
 import { generateTokens } from "../helpers/generateToken";
 import { catchAsync } from "../helpers/catchAsync";
-import { AppError } from "./globalErrorHanlde";
+import { AppError } from "./globalErrorHandler";
 import verifyAccessToken from "../helpers/veryfyAccessToken";
 import { verifyRefreshToken } from "../helpers/verifyRefreshToken";
 

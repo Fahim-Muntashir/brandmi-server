@@ -5,12 +5,13 @@ import cors from 'cors';
 import cookieParser from "cookie-parser"
 import mongoose from 'mongoose';
 import { config } from './config';
-import { errorHandler } from './middleware/globalErrorHanlde';
+import { errorHandler } from './middleware/globalErrorHandler';
 import { UserRoute } from './modules/user/user.routes';
 import { GoogleRoute } from './modules/google/google.routes';
 import { AuthRoutes } from './modules/auth/auth.routes';
 import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
 import { ServiceRoutes } from './modules/Service/service.route';
+import { OtpValidationRoutes } from './modules/otpValidation/otpValidation.routes';
 import { OrderRoutes } from './modules/Order/order.routes';
 import { PaymentRoutes } from './modules/payment/payment.route';
 
@@ -39,6 +40,7 @@ app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
 app.use("/api/v1/services", ServiceRoutes)
+app.use("/api/auth", OtpValidationRoutes)
 
 
 

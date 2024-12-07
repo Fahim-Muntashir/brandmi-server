@@ -1,4 +1,4 @@
-import { AppError } from "../../middleware/globalErrorHanlde"
+import { AppError } from "../../middleware/globalErrorHandler"
 import { IBuyerProfile } from "./buyerProfile.interface"
 import BuyerProfileModel from "./buyerProfile.models"
 
