@@ -2,11 +2,13 @@ import { Request, Response } from 'express';
 import { catchAsync } from '../../helpers/catchAsync';
 import { sendResponse } from '../../helpers/sendResponse';
 import { PaymentService } from './payment.service';
-import { stripeInstance } from '../../app';
+import Stripe from 'stripe';
+import { config } from '../../config';
+
+export const stripeInstance=new Stripe(config.payment_secret_key as string)
 
 const createPayment = catchAsync(async (req: Request, res: Response) => {
   const { amount, currency, paymentMethodId, serviceId, buyerId, sellerId } = req.body;
-
 
   if (!amount || !currency || !paymentMethodId || !serviceId || !buyerId || !sellerId) {
     throw new Error('Missing required fields');
@@ -15,28 +17,15 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
   const paymentIntent = await stripeInstance.paymentIntents.create({
     amount, // Amount in cents
     currency,
-    payment_method: paymentMethodId,
-    confirm: true, // Automatically confirm the payment
   });
 
-
-  const paymentData = {
-    serviceId,
-    buyerId,
-    sellerId,
-    amount: amount / 100, // Convert cents to dollars
-    status: paymentIntent.status as 'pending' | 'completed' | 'failed',
-    paymentMethod: paymentIntent.payment_method as string | null,
-    transactionId: paymentIntent.id,
-  };
-
-  const savedPayment = await PaymentService.savePayment(paymentData);
+  console.log(paymentIntent.client_secret);
 
   sendResponse(res, {
     status: 201,
     success: true,
     message: 'Payment processed successfully',
-    data: savedPayment,
+    data: paymentIntent.client_secret,
   });
 });
 

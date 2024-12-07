@@ -12,7 +12,6 @@ import { AuthRoutes } from './modules/auth/auth.routes';
 import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
 import { ServiceRoutes } from './modules/Service/service.route';
 import { OrderRoutes } from './modules/Order/order.routes';
-import Stripe from 'stripe';
 import { PaymentRoutes } from './modules/payment/payment.route';
 
 const app: Application = express();
@@ -42,7 +41,6 @@ app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
 app.use("/api/v1/services", ServiceRoutes)
 
 
-export const stripeInstance=new Stripe(config.payment_secret_key as string)
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {
