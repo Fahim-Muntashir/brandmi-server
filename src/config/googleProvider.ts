@@ -10,11 +10,23 @@ passport.use(
             clientID: config.GOOGLE_CLIENT_ID as string,
             clientSecret: config.GOOGLE_CLIENT_SECRET as string,
             callbackURL: config.callbackURL,
+            passReqToCallback: true, // Enable passing req to callback
         },
-        async (accessToken, refreshToken, profile, cb) => {
+        async (req, accessToken, refreshToken, profile, cb) => {
+            const state = req.query.state as string;
+
+            // Safely parse the state
+            const parsedState = JSON.parse(state);
+            const { mode } = parsedState; // Extract the mode value
+
+            if (mode === "login") {
+                return cb({ code: 'LOGIN_ERROR', message: 'Invalid login mode' });
+            }
+
 
 
             try {
+                // login page => check user exit or not . if exit proceed to login
                 let user = await User.findOne({ email: profile._json.email });
 
                 if (!user) {
@@ -45,7 +57,6 @@ passport.use(
                     expiredDate: config.REFRESH_TOKEN_EXPIRED as string,
                 });
 
-                // Pass user and tokens to the callback
                 // Pass user and tokens in the callback
                 return cb(null, { user, accessToken, refreshToken });
             } catch (error) {

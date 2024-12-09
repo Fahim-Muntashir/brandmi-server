@@ -6,6 +6,8 @@ import { config } from '../../config';
 export const GoogleController = {
     callback: (req: any, res: Response) => {
         const { accessToken, refreshToken } = req.user;
+
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: true,

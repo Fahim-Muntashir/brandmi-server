@@ -14,6 +14,7 @@ import { ServiceRoutes } from './modules/Service/service.route';
 import { OtpValidationRoutes } from './modules/otpValidation/otpValidation.routes';
 import { OrderRoutes } from './modules/Order/order.routes';
 import { PaymentRoutes } from './modules/payment/payment.route';
+import { BuyerProfileRoutes } from './modules/buyerProfile/buyerProfile.routes';
 
 const app: Application = express();
 
@@ -34,8 +35,8 @@ app.use(cookieParser())
 // Routes
 app.use("/api/v1/user", UserRoute)
 app.use("/api/v1/auth", AuthRoutes)
-app.use("/api/v1/auth/google", GoogleRoute);
-app.use("/api/v1/buyer", GoogleRoute);
+app.use("/auth/google", GoogleRoute);
+app.use("/api/v1/buyer", BuyerProfileRoutes);
 app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
