@@ -27,6 +27,7 @@ router.get(
             'google',
             { session: false },
             (err, user, info) => {
+
                 if (err) {
                     return res.send(`
                         <html>
@@ -47,7 +48,7 @@ router.get(
                         </html>
                     `);
                 }
-
+                req.user = user;
                 next();
             }
         )(req, res, next); // Call the authenticate function with req, res, next
