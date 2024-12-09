@@ -13,6 +13,7 @@ passport.use(
             passReqToCallback: true, // Enable passing req to callback
         },
         async (req, accessToken, refreshToken, profile, cb) => {
+            console.log(profile);
 
             try {
                 const state = req.query.state as string;
@@ -40,6 +41,7 @@ passport.use(
                     user = await User.create({
                         name: profile._json.name,
                         email: profile._json.email,
+                        image: profile._json.picture,
                         role: "user",
                     });
                     // If we reach here, we have a valid `user`
@@ -55,6 +57,7 @@ passport.use(
                     userId: user._id,
                     userName: user.name,
                     role: user.role,
+                    image: user?.image,
                     email: user.email,
                 };
 

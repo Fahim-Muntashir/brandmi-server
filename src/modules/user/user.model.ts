@@ -7,6 +7,7 @@ export interface IUser extends Document {
     password?: string;
     role: 'user' | 'admin';
     googleId?: string;
+    image?: string;
     isvaryfied: boolean;
     // comparePassword(password: string): Promise<boolean>;
 }
@@ -15,6 +16,7 @@ const userSchema = new Schema<IUser>({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
+    image: { type: String },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     googleId: { type: String },
     isvaryfied: { type: Boolean, default: false }

@@ -41,7 +41,7 @@ app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
 app.use("/api/v1/sellerprofiles", SellerProfileRoutes)
 app.use("/api/v1/services", ServiceRoutes)
-app.use("/api/auth", OtpValidationRoutes)
+app.use("/api/v1/auth", OtpValidationRoutes)
 
 
 
