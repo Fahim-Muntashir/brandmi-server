@@ -2,10 +2,20 @@
 // src/modules/controllers/google.controller.ts
 import { Response } from 'express';
 import { config } from '../../config';
+import { googleErrorMessage } from '../../helpers/googleErrorMessage';
 
 export const GoogleController = {
-    callback: (req: any, res: Response) => {
-        const { accessToken, refreshToken } = req.user;
+    callback: (err: any, user: any, req: any, res: Response) => {
+
+
+        if (err) {
+            return res.send(googleErrorMessage(err.message))
+        }
+        if (!user) {
+            // Handle the case where the user is not authenticated
+            return res.status(401).send(googleErrorMessage('Authentication failed. Please try again.'));
+        }
+        const { accessToken, refreshToken } = user;
 
 
         res.cookie('refreshToken', refreshToken, {
