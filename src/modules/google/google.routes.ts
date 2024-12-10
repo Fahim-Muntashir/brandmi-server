@@ -10,10 +10,10 @@ const router = Router();
 
 router.get(
     '/', (req, res, next) => {
-        const mode = req.query.mode
+        const { mode, role } = req.query
         passport.authenticate('google', {
             session: false,
-            state: JSON.stringify({ mode }), // Pass mode as state
+            state: JSON.stringify({ mode, role }), // Pass mode as state
             scope: ['profile', 'email']
         })(req, res, next)
     }

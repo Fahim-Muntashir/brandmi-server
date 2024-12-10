@@ -19,7 +19,7 @@ passport.use(
 
                 // Safely parse the state
                 const parsedState = JSON.parse(state);
-                const { mode } = parsedState;
+                const { mode, role } = parsedState;
                 // login page => check user exit or not . if exit proceed to login
                 let user = await User.findOne({ email: profile._json.email });
 
@@ -41,7 +41,7 @@ passport.use(
                         name: profile._json.name,
                         email: profile._json.email,
                         image: profile._json.picture,
-                        role: "user",
+                        role: role
                     });
                     // If we reach here, we have a valid `user`
 
