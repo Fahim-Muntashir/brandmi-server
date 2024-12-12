@@ -13,28 +13,42 @@ passport.use(
             passReqToCallback: true, // Enable passing req to callback
         },
         async (req, accessToken, refreshToken, profile, cb) => {
-            const state = req.query.state as string;
-
-            // Safely parse the state
-            const parsedState = JSON.parse(state);
-            const { mode } = parsedState; // Extract the mode value
-
-            if (mode === "login") {
-                return cb({ code: 'LOGIN_ERROR', message: 'Invalid login mode' });
-            }
-
-
 
             try {
+                const state = req.query.state as string;
+
+                // Safely parse the state
+                const parsedState = JSON.parse(state);
+                const { mode, role } = parsedState;
                 // login page => check user exit or not . if exit proceed to login
                 let user = await User.findOne({ email: profile._json.email });
 
-                if (!user) {
+                if (mode === "login") {
+                    if (!user) {
+                        return cb({ code: 'LOGIN_ERROR', message: 'You have to create an account! go to register page and create an account' });
+
+                    }
+                }
+
+
+                // Logic for Registration Mode
+                if (mode === "registration") {
+                    if (user) {
+                        return cb({ code: "REGISTRATION_ERROR", message: "User already exists. Please login instead." });
+                    }
+                    // Create a new user
                     user = await User.create({
                         name: profile._json.name,
                         email: profile._json.email,
-                        role: "user",
+                        image: profile._json.picture,
+                        role: role
                     });
+                    // If we reach here, we have a valid `user`
+
+                }
+
+                if (!user) {
+                    return cb({ code: "UNKNOWN_ERROR", message: "Something went wrong while processing the user." });
                 }
 
                 // Generate tokens
@@ -42,6 +56,7 @@ passport.use(
                     userId: user._id,
                     userName: user.name,
                     role: user.role,
+                    image: user?.image,
                     email: user.email,
                 };
 

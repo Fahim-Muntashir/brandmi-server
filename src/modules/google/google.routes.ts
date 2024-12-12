@@ -10,10 +10,10 @@ const router = Router();
 
 router.get(
     '/', (req, res, next) => {
-        const mode = req.query.mode
+        const { mode, role } = req.query
         passport.authenticate('google', {
             session: false,
-            state: JSON.stringify({ mode }), // Pass mode as state
+            state: JSON.stringify({ mode, role }), // Pass mode as state
             scope: ['profile', 'email']
         })(req, res, next)
     }
@@ -25,34 +25,13 @@ router.get(
     (req, res, next) => {
         passport.authenticate(
             'google',
-            { session: false },
-            (err, user, info) => {
-                if (err) {
-                    return res.send(`
-                        <html>
-                            <head>
-                                <title>Error</title>
-                                <style>
-                                    body { font-family: Arial, sans-serif; background-color: #f8d7da; color: #721c24; padding: 20px; }
-                                    .error-container { text-align: center; padding: 20px; border: 1px solid #f5c6cb; background-color: #f8d7da; }
-                                </style>
-                            </head>
-                            <body>
-                                <div class="error-container">
-                                    <h1>Authentication Error</h1>
-                                    <p>${err.message}</p>
-                                    <button onclick="window.close()">Close</button>
-                                </div>
-                            </body>
-                        </html>
-                    `);
-                }
+            { session: false }, (err, user, info) => {
+                GoogleController.callback(err, user, req, res)
 
-                next();
             }
-        )(req, res, next); // Call the authenticate function with req, res, next
+
+        )(req, res, next)
     },
-    GoogleController.callback
 );
 
 
