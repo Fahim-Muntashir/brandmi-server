@@ -5,8 +5,10 @@ import passport from 'passport';
 import '../../config/googleProvider'; // Ensure passport strategy is configured
 import { config } from '../../config';
 import { GoogleController } from './google.controllers';
+import { GoogleOneTap } from './googleOneTap..controllers';
 
 const router = Router();
+router.post("/googleOneTap", GoogleOneTap.googleOneTapLogin)
 
 router.get(
     '/', (req, res, next) => {
@@ -19,6 +21,9 @@ router.get(
     }
 
 );
+
+
+
 
 router.get(
     '/callback',

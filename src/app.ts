@@ -35,7 +35,7 @@ app.use(cookieParser())
 // Routes
 app.use("/api/v1/user", UserRoute)
 app.use("/api/v1/auth", AuthRoutes)
-app.use("/auth/google", GoogleRoute);
+app.use("/api/v1/auth/google", GoogleRoute);
 app.use("/api/v1/buyer", BuyerProfileRoutes);
 app.use("/api/v1/order", OrderRoutes);
 app.use("/api/v1/payment", PaymentRoutes);
