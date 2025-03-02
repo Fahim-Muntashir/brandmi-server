@@ -1,16 +1,16 @@
 import { ISellerProfile } from "./sellerProfile.interface";
 import { SellerProfile } from "./sellerProfile.module";
 
- const createSellerProfile = async (data: ISellerProfile) => {
-  const { userId } = data;
-  // Check if the profile already exists
-  const existingProfile = await SellerProfile.findOne({ userId });
-  if (existingProfile) {
-    throw new Error('Profile already exists for this seller');
-  }
-  // Create a new profile
-  const sellerProfile = new SellerProfile(data);
-  return await sellerProfile.save();
+const createSellerProfile = async (data: ISellerProfile) => {
+    const { userId } = data;
+    // Check if the profile already exists
+    const existingProfile = await SellerProfile.findOne({ userId });
+    if (existingProfile) {
+        throw new Error('Profile already exists for this seller');
+    }
+    // Create a new profile
+    const sellerProfile = new SellerProfile(data);
+    return await sellerProfile.save();
 };
 
 
@@ -20,16 +20,16 @@ const getSellerProfile = async (sellerId: string) => {
     // .populate('services')
     // .populate('portfolio');
 
-  if (!sellerProfile) {
-    throw new Error('Seller profile not found');
-  }
-  return sellerProfile;
+    if (!sellerProfile) {
+        throw new Error('Seller profile not found');
+    }
+    return sellerProfile;
 };
 
 
- const getAllSellerProfiles = async () => {
-     return await SellerProfile.find();
-     
+const getAllSellerProfiles = async () => {
+    return await SellerProfile.find();
+
     // Task: When service and portfolio model are available then add this
     // .populate('services')
     // .populate('portfolio');
@@ -39,36 +39,37 @@ const getSellerProfile = async (sellerId: string) => {
 
 
 const updateSellerProfile = async (sellerId: string, updates: ISellerProfile) => {
-     
-    console.log(updates,sellerId);
-  const updatedProfile = await SellerProfile.findOneAndUpdate(
-    { seller: sellerId },
-    { ...updates, updatedAt: Date.now() },
-    { new: true }
-  );
 
-  if (!updatedProfile) {
-    throw new Error('Seller profile not found');
-  }
+    console.log(updates, sellerId);
+    // return "code is working"
+    const updatedProfile = await SellerProfile.findOneAndUpdate(
+        { _id: sellerId },
+        { ...updates, updatedAt: Date.now() },
+        { new: true }
+    );
 
-  return updatedProfile;
+    if (!updatedProfile) {
+        throw new Error('Seller profile not found');
+    }
+
+    return updatedProfile;
 };
 
 
 
 
- const deleteSellerProfile = async (sellerId: string) => {
-  const deletedProfile = await SellerProfile.findOneAndUpdate(
-    { seller: sellerId },
-    { status: 'inactive', updatedAt: Date.now() },
-    { new: true }
-  );
+const deleteSellerProfile = async (sellerId: string) => {
+    const deletedProfile = await SellerProfile.findOneAndUpdate(
+        { seller: sellerId },
+        { status: 'inactive', updatedAt: Date.now() },
+        { new: true }
+    );
 
-  if (!deletedProfile) {
-    throw new Error('Seller profile not found');
-  }
+    if (!deletedProfile) {
+        throw new Error('Seller profile not found');
+    }
 
-  return deletedProfile;
+    return deletedProfile;
 };
 
 
