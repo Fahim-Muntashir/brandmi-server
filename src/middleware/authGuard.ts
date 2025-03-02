@@ -4,7 +4,10 @@ import { catchAsync } from "../helpers/catchAsync";
 import { User } from "../modules/user/user.model";
 import verifyAccessToken from "../helpers/veryfyAccessToken";
 
-export const authMiddleware = (allowedRoles: string[]) => {
+// Define allowed roles type
+type AllowedRole = "seller" | "buyer";
+
+export const authMiddleware = (allowedRoles: AllowedRole | AllowedRole[]) => {
     return catchAsync(async (req, res, next) => {
         // Get token from headers
         const token = req.headers.authorization;
@@ -21,12 +24,17 @@ export const authMiddleware = (allowedRoles: string[]) => {
         // Check if user exists in the database
         const user = await User.findById(userId);
 
+
         if (!user) {
             throw new AppError("User does not exist", 401);
         }
 
         // Check if the user's role is allowed
-        if (!allowedRoles.includes(user.role)) {
+        if (!Array.isArray(allowedRoles)) {
+            allowedRoles = [allowedRoles];
+        }
+
+        if (!allowedRoles.includes(user.role as AllowedRole)) {
             throw new AppError("You do not have permission to access this resource", 403);
         }
 
