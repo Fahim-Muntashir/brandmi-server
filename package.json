@@ -8,8 +8,10 @@
         "build": "tsc",
         "lint": "eslint . --ext .ts",
         "test": "jest",
-        "migrate":"npx drizzle-kit migrate",
-        "generate":"npx drizzle-kit generate" 
+        "genarate": "npx drizzle-kit generate",
+        "migrate": "npx drizzle-kit migrate",
+        "db:update": "npx drizzle-kit push",
+        "studio": "npx drizzle-kit studio"
     },
     "dependencies": {
         "@types/stripe": "^8.0.416",
