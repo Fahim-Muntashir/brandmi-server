@@ -11,6 +11,7 @@
         "migrate": "npx prisma migrate dev"
     },
     "dependencies": {
+        "@prisma/client": "^6.5.0",
         "@types/stripe": "^8.0.416",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
