@@ -8,17 +8,14 @@
         "build": "tsc",
         "lint": "eslint . --ext .ts",
         "test": "jest",
-        "genarate": "npx drizzle-kit generate",
-        "migrate": "npx drizzle-kit migrate",
-        "db:update": "npx drizzle-kit push",
-        "studio": "npx drizzle-kit studio"
+        "migrate": "npx prisma migrate dev"
     },
     "dependencies": {
+        "@prisma/client": "^6.5.0",
         "@types/stripe": "^8.0.416",
         "cookie-parser": "^1.4.7",
         "cors": "^2.8.5",
-        "dotenv": "^16.4.7",
-        "drizzle-orm": "^0.40.0",
+        "dotenv": "^16.0.3",
         "express": "^4.18.2",
         "google-auth-library": "^9.15.0",
         "jsonwebtoken": "^9.0.2",
@@ -26,7 +23,6 @@
         "nodemailer": "^6.9.16",
         "passport": "^0.7.0",
         "passport-google-oauth20": "^2.0.0",
-        "pg": "^8.13.3",
         "stripe": "^17.4.0"
     },
     "devDependencies": {
@@ -34,17 +30,16 @@
         "@types/cors": "^2.8.13",
         "@types/express": "^4.17.17",
         "@types/jsonwebtoken": "^9.0.7",
-        "@types/node": "^18.15.11",
+        "@types/node": "^18.19.80",
         "@types/nodemailer": "^6.4.17",
         "@types/passport-google-oauth20": "^2.0.16",
-        "@types/pg": "^8.11.11",
         "@typescript-eslint/eslint-plugin": "^8.15.0",
         "@typescript-eslint/parser": "^8.15.0",
-        "drizzle-kit": "^0.30.5",
         "eslint": "^8.37.0",
+        "prisma": "^6.5.0",
         "ts-node": "^10.9.1",
         "ts-node-dev": "^2.0.0",
         "tsx": "^4.19.3",
-        "typescript": "^5.0.3"
+        "typescript": "^5.8.2"
     }
 }
