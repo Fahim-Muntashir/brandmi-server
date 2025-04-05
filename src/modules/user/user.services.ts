@@ -1,29 +1,48 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { eq } from "drizzle-orm";
+import { PrismaClient } from "@prisma/client";
 import emailTransporter from "../../config/emailTransport";
 import otpEmail from "../../emails/otpEmail";
 import { AppError } from "../../middleware/globalErrorHandler";
-import { db } from "../../db/db";
-import { users } from "../../db/schema/users.schema";
-import { otpValidations } from "../../db/schema/otpValidation.schema";
 
-const createUser = async (payload: any) => {
+const prisma = new PrismaClient();
 
-    console.log(payload);
-    // 1. User validation
-    const existingUser = await db.select().from(users).where(eq(users.email, payload.email));
-    if (existingUser.length > 0) {
+export const createUser = async (payload: any) => {
+    // 1. Check if email already exists
+    const existingUser = await prisma.user.findUnique({
+        where: { email: payload.email },
+    });
+
+    if (existingUser) {
         throw new AppError("Email already registered", 400);
     }
 
-    // 2. Generate a six-digit OTP
+    // 2. Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000);
 
-    // 3. Save user and OTP code using a transaction
+    // 3. Save user and OTP in a transaction
     try {
-        await db.transaction(async (tx) => {
-            const [user] = await tx.insert(users).values({ ...payload }).returning();
-            await tx.insert(otpValidations).values({ userId: user.id, otpCode });
+        await prisma.$transaction(async (tx: any) => {
+
+            const user = await tx.user.create({
+                data: {
+                    name: payload.name,
+                    email: payload.email,
+                    password: payload.password,
+                    role: payload.role,
+                    image: payload.image,
+                    googleId: payload.googleId,
+                    isvaryfied: false
+                },
+            });
+
+            await tx.otpValidation.create({
+                data: {
+                    userId: user.id,
+                    otpCode: otpCode.toString()
+                },
+            });
         });
 
         // 4. Send verification email
@@ -34,27 +53,32 @@ const createUser = async (payload: any) => {
             console.error("Email sending failed", error);
         }
 
-        // 5. Return the user object
+        // 5. Return public user data
         return {
             name: payload.name,
             email: payload.email,
             role: payload.role
         };
-    } catch (error) {
+
+    } catch (error: any) {
         throw new AppError("User creation failed", 500);
     }
 };
 
-const myProfile = async (userId: string) => {
-    const user = await db.select().from(users).where(eq(users.id, userId));
+export const myProfile = async (userId: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId
+        }
+    });
 
-    if (user.length === 0) {
+    if (!user) {
         throw new AppError("Sorry! There is no user", 401);
     }
-    return user[0];
-};
 
+    return user;
+};
 export const UserServices = {
-    createUser, 
+    createUser,
     myProfile
 };

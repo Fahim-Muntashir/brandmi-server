@@ -3,13 +3,20 @@ import { config } from "../../config";
 import { generateTokens } from "../../helpers/generateToken";
 import { AppError } from "../../middleware/globalErrorHandler";
 import { IAuth } from "./auth.mdel";
-import { User } from "../user/user.model";
+import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
 const loginUser = async (payload: IAuth, res: Response) => {
     const { email, password } = payload;
 
     //  validate user
-    const user = await User.findOne({ email, isvaryfied: true });
+    const user = await prisma.user.findFirst({
+        where: {
+            email,
+            isvaryfied: true,
+        },
+    });
+
     if (!user || !user.password) {
         throw new AppError("Invalid credentials", 401)
     }
@@ -22,7 +29,7 @@ const loginUser = async (payload: IAuth, res: Response) => {
 
     //  access token
     const jwtPayload = {
-        userId: user._id,
+        userId: user.id,
         userName: user.name,
         role: user.role,
         email: user.email

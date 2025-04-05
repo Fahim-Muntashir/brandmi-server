@@ -6,6 +6,7 @@ import { UserServices } from "./user.services";
 import { AppError } from "../../middleware/globalErrorHandler";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
+    console.log("hi");
 
     const result = await UserServices.createUser(req.body)
 
