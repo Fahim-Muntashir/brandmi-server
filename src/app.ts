@@ -5,15 +5,8 @@ import cors from 'cors';
 import cookieParser from "cookie-parser"
 import { config } from './config';
 import { errorHandler } from './middleware/globalErrorHandler';
-import { UserRoute } from './modules/user/user.routes';
-import { GoogleRoute } from './modules/google/google.routes';
-import { AuthRoutes } from './modules/auth/auth.routes';
-import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
-import { ServiceRoutes } from './modules/Service/service.route';
-import { OtpValidationRoutes } from './modules/otpValidation/otpValidation.routes';
-import { OrderRoutes } from './modules/Order/order.routes';
-import { PaymentRoutes } from './modules/payment/payment.route';
-import { BuyerProfileRoutes } from './modules/buyerProfile/buyerProfile.routes';
+
+import { applicationRoutes } from './routes';
 
 const app: Application = express();
 
@@ -30,16 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
 
-// Routes
-app.use("/api/v1/user", UserRoute)
-app.use("/api/v1/auth", AuthRoutes)
-app.use("/api/v1/auth/google", GoogleRoute);
-app.use("/api/v1/buyer", BuyerProfileRoutes);
-app.use("/api/v1/order", OrderRoutes);
-app.use("/api/v1/payment", PaymentRoutes);
-app.use("/api/v1/sellerProfile", SellerProfileRoutes)
-app.use("/api/v1/services", ServiceRoutes)
-app.use("/api/v1/auth", OtpValidationRoutes)
+app.use("/api/v1", applicationRoutes);
 
 
 
