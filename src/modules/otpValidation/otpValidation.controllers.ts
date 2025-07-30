@@ -3,7 +3,6 @@ import { sendResponse } from "../../helpers/sendResponse"
 import { OtpValidationServices } from "./otpValidation.services"
 
 const verifyOtp = catchAsync(async (req, res) => {
-    console.log("hi");
 
 
     await OtpValidationServices.verifyOtp(req.body)
