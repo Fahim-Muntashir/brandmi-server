@@ -1,45 +1,35 @@
 {
-    "name": "express-typescript-api",
-    "version": "1.0.0",
-    "main": "dist/app.js",
-    "scripts": {
-        "start": "node dist/app.js",
-        "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-        "build": "tsc",
-        "lint": "eslint . --ext .ts",
-        "test": "jest",
-        "migrate": "npx prisma migrate dev"
-    },
-    "dependencies": {
-        "@prisma/client": "^6.5.0",
-        "@types/stripe": "^8.0.416",
-        "cookie-parser": "^1.4.7",
-        "cors": "^2.8.5",
-        "dotenv": "^16.0.3",
-        "express": "^4.18.2",
-        "google-auth-library": "^9.15.0",
-        "jsonwebtoken": "^9.0.2",
-        "mongoose": "^8.8.2",
-        "nodemailer": "^6.9.16",
-        "passport": "^0.7.0",
-        "passport-google-oauth20": "^2.0.0",
-        "stripe": "^17.4.0"
-    },
-    "devDependencies": {
-        "@types/cookie-parser": "^1.4.7",
-        "@types/cors": "^2.8.13",
-        "@types/express": "^4.17.17",
-        "@types/jsonwebtoken": "^9.0.7",
-        "@types/node": "^18.19.80",
-        "@types/nodemailer": "^6.4.17",
-        "@types/passport-google-oauth20": "^2.0.16",
-        "@typescript-eslint/eslint-plugin": "^8.15.0",
-        "@typescript-eslint/parser": "^8.15.0",
-        "eslint": "^8.37.0",
-        "prisma": "^6.5.0",
-        "ts-node": "^10.9.1",
-        "ts-node-dev": "^2.0.0",
-        "tsx": "^4.19.3",
-        "typescript": "^5.8.2"
-    }
+  "name": "agency-backend",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000M\u0000G\u0000_\u0000A\u0000g\u0000e\u0000n\u0000c\u0000y\u0000_\u0000B\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "prettier:fix":"npx prettier --write src",
+    "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
+    "lint:fix": "npx eslint src --fix",
+    "lint": "eslint src --ignore-path .eslintignore --ext .ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev":"ts-node-dev --respawn --transpile-only src/server.ts",
+    "start:prod":"node ./dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongoose": "^8.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@typescript-eslint/eslint-plugin": "^6.13.2",
+    "@typescript-eslint/parser": "^6.13.2",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.2"
+  }
 }

@@ -1,76 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// src/app.ts
-import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import cookieParser from "cookie-parser"
-import { config } from './config';
-import { errorHandler } from './middleware/globalErrorHandler';
-import { UserRoute } from './modules/user/user.routes';
-import { GoogleRoute } from './modules/google/google.routes';
-import { AuthRoutes } from './modules/auth/auth.routes';
-import { SellerProfileRoutes } from './modules/SellerProfile/sellerProfile.route';
-import { ServiceRoutes } from './modules/Service/service.route';
-import { OtpValidationRoutes } from './modules/otpValidation/otpValidation.routes';
-import { OrderRoutes } from './modules/Order/order.routes';
-import { PaymentRoutes } from './modules/payment/payment.route';
-import { BuyerProfileRoutes } from './modules/buyerProfile/buyerProfile.routes';
+import express, { Application, Request, Response } from 'express';
+import { UserRoutes } from './app/modules/user.route';
 
 const app: Application = express();
 
-const corsOptions = {
-    origin: config.FRONTED_HOST,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true,
-}
-
-// Middleware
-app.use(cors(corsOptions));
+//parsers
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
+app.use(cors());
 
-
-// Routes
-app.use("/api/v1/user", UserRoute)
-app.use("/api/v1/auth", AuthRoutes)
-app.use("/api/v1/auth/google", GoogleRoute);
-app.use("/api/v1/buyer", BuyerProfileRoutes);
-app.use("/api/v1/order", OrderRoutes);
-app.use("/api/v1/payment", PaymentRoutes);
-app.use("/api/v1/sellerProfile", SellerProfileRoutes)
-app.use("/api/v1/services", ServiceRoutes)
-app.use("/api/v1/auth", OtpValidationRoutes)
+app.use('/api',UserRoutes)
 
 
 
-// Health check endpoint
 app.get('/', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'OK' });
+  const a = 10;
+  res.send(a);
 });
 
-
-
-
-// global error
-app.use(errorHandler)
-
-// // Connect to MongoDB
-// const connectDB = async () => {
-//     try {
-//         db.
-//         console.log('Connected to MongoDB');
-//     } catch (error) {
-//         console.error('Database connection failed:', error);
-//         process.exit(1); // Exit process with failure
-//     }
-// };
-
-
-
-// Start the server and connect database
-const startServer = async () => {
-    app.listen(config.port, () => {
-        console.log(`Server is running on port ${config.port}`);
-    });
-};
-startServer()
+export default app;
