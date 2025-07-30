@@ -3,7 +3,6 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import cookieParser from "cookie-parser"
-import mongoose from 'mongoose';
 import { config } from './config';
 import { errorHandler } from './middleware/globalErrorHandler';
 import { UserRoute } from './modules/user/user.routes';
@@ -16,7 +15,7 @@ import { OrderRoutes } from './modules/Order/order.routes';
 import { PaymentRoutes } from './modules/payment/payment.route';
 import { BuyerProfileRoutes } from './modules/buyerProfile/buyerProfile.routes';
 
-const app: Application = express();
+export const app: Application = express();
 
 
 const corsOptions = {
@@ -56,24 +55,24 @@ app.get('/', (req: Request, res: Response) => {
 // global error
 app.use(errorHandler)
 
-// Connect to MongoDB
-const connectDB = async () => {
-    try {
-        await mongoose.connect(config.mongodb_url as string);
-        console.log('Connected to MongoDB');
-    } catch (error) {
-        console.error('Database connection failed:', error);
-        process.exit(1); // Exit process with failure
-    }
-};
+// // Connect to MongoDB
+// const connectDB = async () => {
+//     try {
+//         await mongoose.connect(config.mongodb_url as string);
+//         console.log('Connected to MongoDB');
+//     } catch (error) {
+//         console.error('Database connection failed:', error);
+//         process.exit(1); // Exit process with failure
+//     }
+// };
 
 
 
-// Start the server and connect database
-const startServer = async () => {
-    await connectDB(); // Wait for database connection
-    app.listen(config.port, () => {
-        console.log(`Server is running on port ${config.port}`);
-    });
-};
-startServer()
+// // Start the server and connect database
+// const startServer = async () => {
+//     await connectDB(); // Wait for database connection
+//     app.listen(config.port, () => {
+//         console.log(`Server is running on port ${config.port}`);
+//     });
+// };
+// startServer()
