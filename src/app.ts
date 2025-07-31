@@ -38,38 +38,10 @@ app.get('/', (req: Request, res: Response) => {
 // global error
 app.use(errorHandler)
 
-// // Connect to MongoDB
-// const connectDB = async () => {
-//     try {
-<<<<<<< HEAD
-//         await mongoose.connect(config.mongodb_url as string);
-=======
-//         db.
->>>>>>> 22e9411d283a8fec892d1fa3a25f4f77a027541c
-//         console.log('Connected to MongoDB');
-//     } catch (error) {
-//         console.error('Database connection failed:', error);
-//         process.exit(1); // Exit process with failure
-//     }
-// };
+// Connect to MongoDB
 
 
 
-<<<<<<< HEAD
-// // Start the server and connect database
-// const startServer = async () => {
-//     await connectDB(); // Wait for database connection
-//     app.listen(config.port, () => {
-//         console.log(`Server is running on port ${config.port}`);
-//     });
-// };
-// startServer()
-=======
+
 // Start the server and connect database
-const startServer = async () => {
-    app.listen(config.port, () => {
-        console.log(`Server is running on port ${config.port}`);
-    });
-};
-startServer()
->>>>>>> 22e9411d283a8fec892d1fa3a25f4f77a027541c
+

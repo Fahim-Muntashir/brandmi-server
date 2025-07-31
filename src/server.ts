@@ -5,6 +5,7 @@ import { app } from "./app";
 const main = async () => {
     try {
         // 1. Connect to the database
+        console.log("runnign")
         await mongoose.connect(config.mongodb_url as string);
         console.log('✅ Database connected successfully!');
 
