@@ -3,18 +3,15 @@ import { config } from "../../config";
 import { generateTokens } from "../../helpers/generateToken";
 import { AppError } from "../../middleware/globalErrorHandler";
 import { IAuth } from "./auth.mdel";
-import { PrismaClient } from "@prisma/client";
+import { User } from "../user/user.model";
 
-const prisma = new PrismaClient();
 const loginUser = async (payload: IAuth, res: Response) => {
     const { email, password } = payload;
 
     //  validate user
-    const user = await prisma.user.findFirst({
-        where: {
-            email,
-            isvaryfied: true,
-        },
+    const user = await User.findOne({
+        email,
+        isvaryfied: true,
     });
 
     if (!user || !user.password) {

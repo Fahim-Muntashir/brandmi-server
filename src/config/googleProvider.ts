@@ -2,9 +2,8 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import passport from "passport";
 import { config } from ".";
 import { generateTokens } from "../helpers/generateToken";
-import { PrismaClient } from "@prisma/client";
+import { User } from "../modules/user/user.model";
 
-const prisma = new PrismaClient()
 
 passport.use(
     new GoogleStrategy(
@@ -23,11 +22,7 @@ passport.use(
                 const parsedState = JSON.parse(state);
                 const { mode, role } = parsedState;
                 // login page => check user exit or not . if exit proceed to login
-                let user = await prisma.user.findUnique({
-                    where: {
-                        email: profile._json.email, // Assuming profile._json.email holds the email
-                    },
-                });
+                let user = await User.findOne({ email: profile._json.email });
 
 
                 if (mode === "login") {
@@ -44,14 +39,13 @@ passport.use(
                         return cb({ code: "REGISTRATION_ERROR", message: "User already exists. Please login instead." });
                     }
                     // Create a new user
-                    user = await prisma.user.create({
-                        data: {
-                            name: profile._json.name as string,
-                            email: profile._json.email as string,
-                            image: profile._json.picture,
-                            role: role, // Assuming `role` is passed in as a parameter or determined elsewhere
-                        },
+                    user = await User.create({
+                        name: profile._json.name,
+                        email: profile._json.email,
+                        image: profile._json.picture,
+                        role: role, // assuming role is available in this scope
                     });
+
 
                     // If we reach here, we have a valid `user`
 

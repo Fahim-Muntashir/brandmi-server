@@ -4,10 +4,9 @@ import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
 import { AppError } from "../../middleware/globalErrorHandler";
 import { generateTokens } from "../../helpers/generateToken";
-import { PrismaClient } from "@prisma/client";
+import { User } from "../user/user.model";
 const client = new OAuth2Client(config.GOOGLE_CLIENT_ID,);
 
-const prisma = new PrismaClient();
 const googleOneTapLogin = catchAsync(async (req, res) => {
 
     const { idToken } = req.body
@@ -25,9 +24,10 @@ const googleOneTapLogin = catchAsync(async (req, res) => {
     if (!payload) throw new AppError("ID Token is required", 400)
     const { email } = payload;
 
-    const user = await prisma.user.findUnique({
-        where: { email },
-    });
+    const user = await User.findOne({
+        email: email
+    })
+
 
     if (!user) {
         throw new AppError("USER_NOT_FOUND", 400);
@@ -39,7 +39,7 @@ const googleOneTapLogin = catchAsync(async (req, res) => {
         role: user.role,
         image: user?.image,
         email: user.email,
-    };
+    }
 
     const accessToken = generateTokens({
         user: jwtPayload,
