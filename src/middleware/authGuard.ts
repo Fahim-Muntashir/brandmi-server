@@ -8,41 +8,43 @@ import verifyAccessToken from "../helpers/veryfyAccessToken";
 type AllowedRole = "seller" | "buyer";
 
 export const authMiddleware = (allowedRoles: AllowedRole | AllowedRole[]) => {
-    return catchAsync(async (req, res, next) => {
-        // Get token from headers
-        const token = req.headers.authorization;
+  return catchAsync(async (req, res, next) => {
+    // Get token from headers
+    const token = req.headers.authorization;
 
-        // Check if token exists
-        if (!token) {
-            throw new AppError("No authorization token provided", 401);
-        }
+    // Check if token exists
+    if (!token) {
+      throw new AppError("No authorization token provided", 401);
+    }
 
-        // Verify JWT token
-        const decoded = verifyAccessToken(token);
-        const { userId } = decoded;
+    // Verify JWT token
+    const decoded = verifyAccessToken(token);
+    const { userId } = decoded;
 
-        // Check if user exists in the database
-        const user = await User.findById(userId);
+    // Check if user exists in the database
+    const user = await User.findById(userId);
 
+    if (!user) {
+      throw new AppError("User does not exist", 401);
+    }
 
-        if (!user) {
-            throw new AppError("User does not exist", 401);
-        }
+    // Check if the user's role is allowed
+    if (!Array.isArray(allowedRoles)) {
+      allowedRoles = [allowedRoles];
+    }
 
-        // Check if the user's role is allowed
-        if (!Array.isArray(allowedRoles)) {
-            allowedRoles = [allowedRoles];
-        }
+    if (!allowedRoles.includes(user.role as AllowedRole)) {
+      throw new AppError(
+        "You do not have permission to access this resource",
+        403
+      );
+    }
 
-        if (!allowedRoles.includes(user.role as AllowedRole)) {
-            throw new AppError("You do not have permission to access this resource", 403);
-        }
+    // Attach user ID and role to the request object
+    req.userId = userId;
+    req.userRole = user.role;
 
-        // Attach user ID and role to the request object
-        req.userId = userId;
-        req.userRole = user.role;
-
-        // Proceed to the next middleware or controller
-        next();
-    });
+    // Proceed to the next middleware or controller
+    next();
+  });
 };
