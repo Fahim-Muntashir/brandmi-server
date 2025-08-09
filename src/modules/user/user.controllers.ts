@@ -29,7 +29,22 @@ const myProfile = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req;
+  if (!userId) throw new AppError("Invalid request", 401);
+
+  const result = await UserServices.updateUser(userId, req.body, req.file);
+
+  sendResponse(res, {
+    success: true,
+    status: 200,
+    message: "Profile updated successfully",
+    data: result,
+  });
+});
+
 export const UserControllers = {
   createUser,
   myProfile,
+  updateUser,
 };
