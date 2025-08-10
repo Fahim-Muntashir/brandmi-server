@@ -1,103 +1,47 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import { ISellerProfile } from './sellerProfile.interface';
+import mongoose, { Model, Schema } from "mongoose";
+import { ISellerProfile } from "./sellerProfile.interface";
 
 const sellerProfileSchema = new Schema<ISellerProfile>(
-    {
-        userId: {
-            type: Schema.Types.ObjectId,
-            ref: 'User', // Reference to the User model
-            required: true,
-        },
-        country: {
-            type: String,
-            default: '',
-        },
-        company: {
-            type: String,
-            default: '',
-        },
-        age: {
-            type: Number,
-            min: 18,
-            max: 100,
-            default: null,
-        },
-        phone: {
-            type: String,
-            default: '',
-        },
-        name: {
-            type: String,
-
-            required: true
-        },
-        title: {
-            type: String,
-            default: '',
-        },
-        nip: {
-            type: String,
-            default: '',
-        },
-        description: {
-            type: String,
-            default: '',
-        },
-        totalReviews: {
-            type: Number,
-            default: 0,
-        },
-        socialLinks: {
-            twitter: {
-                type: String,
-                default: '',
-            },
-            linkedin: {
-                type: String,
-                default: '',
-            },
-            facebook: {
-                type: String,
-                default: '',
-            },
-        },
-        skills: {
-            type: [String],
-            default: [],
-        },
-        services: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Service',
-            },
-        ],
-        portfolio: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Portfolio',
-            },
-        ],
-        status: {
-            type: String,
-            enum: ['active', 'inactive'],
-            default: 'active',
-        },
-        createdAt: {
-            type: Date,
-            default: Date.now,
-        },
-        updatedAt: {
-            type: Date,
-            default: Date.now,
-        },
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
     },
-    {
-        timestamps: true, // Automatically manage createdAt and updatedAt
-    }
+    title: { type: String, default: "" },
+    description: { type: String, default: "" },
+    skills: { type: [String], default: [] },
+    languages: [
+      {
+        name: { type: String, required: true },
+        level: {
+          type: String,
+          enum: ["basic", "conversational", "fluent", "native"],
+          required: true,
+        },
+      },
+    ],
+    services: [{ type: Schema.Types.ObjectId, ref: "Service" }],
+    portfolio: [{ type: Schema.Types.ObjectId, ref: "Portfolio" }],
+    totalReviews: { type: Number, default: 0 },
+    completedOrders: { type: Number, default: 0 },
+    totalEarnings: { type: Number, default: 0 },
+    badges: { type: [String], default: [] },
+    isVerified: { type: Boolean, default: false },
+    availability: {
+      isAvailable: { type: Boolean, default: true },
+      nextAvailableDate: { type: Date, default: null },
+    },
+    status: { type: String, enum: ["active", "inactive"], default: "active" },
+  },
+  { timestamps: true }
 );
 
-// Export the Mongoose Model
-export const SellerProfile: Model<ISellerProfile> = mongoose.model<ISellerProfile>(
-    'SellerProfile',
-    sellerProfileSchema
+// Index for skills search
+sellerProfileSchema.index({ skills: 1 });
+
+export const SellerProfile: Model<ISellerProfile> = mongoose.model(
+  "SellerProfile",
+  sellerProfileSchema
 );

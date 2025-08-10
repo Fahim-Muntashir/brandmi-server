@@ -4,43 +4,34 @@ import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
 import { AuthServices } from "./auth.services";
 
-
 const loginUser = catchAsync(async (req: Request, res: Response) => {
-    const payload = req.body
-    const result = await AuthServices.loginUser(payload, res)
+  const payload = req.body;
+  const result = await AuthServices.loginUser(payload, res);
 
-
-    sendResponse(res, {
-        status: 201,
-        success: true,
-        message: "user login successfully",
-        data: {
-            id: result._id,
-            name: result.name,
-            email: result.email,
-            role: result.role
-        },
-
-    })
-
-
-
-
-
-})
-
+  sendResponse(res, {
+    status: 201,
+    success: true,
+    message: "user login successfully",
+    data: {
+      id: result._id,
+      name: result.name,
+      profileImage: result.image,
+      email: result.email,
+      role: result.role,
+    },
+  });
+});
 
 const logout = catchAsync(async (req, res) => {
-    res.clearCookie("accessToken");
-    res.clearCookie("refreshToken");
-    sendResponse(res, {
-        message: "logout",
-        status: 201,
-        success: true,
-        data: null
-    })
-})
-
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+  sendResponse(res, {
+    message: "logout",
+    status: 201,
+    success: true,
+    data: null,
+  });
+});
 
 // const refreshToken = async (req: Request, res: Response) => {
 //     try {
@@ -51,7 +42,7 @@ const logout = catchAsync(async (req, res) => {
 //             return res.status(401).json({ message });
 //         }
 
-//         //  generate token 
+//         //  generate token
 //         const user = await User.findById(tokenDetails?.userId)
 //         if (!user) return res.status(401).json({ message: 'there is no user exit' });
 //         const jwtPayload = {
@@ -77,7 +68,7 @@ const logout = catchAsync(async (req, res) => {
 //     }
 // }
 
-
 export const AuthControllers = {
-    loginUser, logout
-}
+  loginUser,
+  logout,
+};
