@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", SellerProfileController.createSellerProfile);
 router.get("/", SellerProfileController.getAllSellerProfiles);
 router.get("/:sellerId", SellerProfileController.getSellerProfile);
-router.put("/:sellerId", SellerProfileController.updateSellerProfile);
+router.patch("/:sellerId", SellerProfileController.updateSellerProfile);
 router.delete("/:sellerId", SellerProfileController.deleteSellerProfile);
 
 export const SellerProfileRoutes = router;

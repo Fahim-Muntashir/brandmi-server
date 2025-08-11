@@ -4,6 +4,7 @@ import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
 
 const createSellerProfile = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.body);
   const sellerProfile = await SellerProfileService.createSellerProfile(
     req.body
   );
@@ -43,6 +44,7 @@ const getAllSellerProfiles = catchAsync(
 
 const updateSellerProfile = catchAsync(async (req: Request, res: Response) => {
   const { sellerId } = req.params;
+
   const updatedProfile = await SellerProfileService.updateSellerProfile(
     sellerId,
     req.body

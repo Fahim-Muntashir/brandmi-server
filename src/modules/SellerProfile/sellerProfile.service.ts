@@ -30,13 +30,19 @@ const getAllSellerProfiles = async () => {
 
 const updateSellerProfile = async (
   sellerId: string,
-  updates: ISellerProfile
+  updates: Partial<ISellerProfile>
 ) => {
+  if (!updates || Object.keys(updates).length === 0) {
+    throw new Error("No update data provided");
+  }
+
+  console.log(sellerId, updates);
   const updatedProfile = await SellerProfile.findOneAndUpdate(
-    { _id: sellerId },
-    { ...updates, updatedAt: Date.now() },
-    { new: true }
+    { userId: sellerId },
+    { $set: { ...updates, updatedAt: new Date() } },
+    { new: true, runValidators: true }
   );
+  console.log(updatedProfile);
 
   if (!updatedProfile) {
     throw new Error("Seller profile not found");
@@ -47,7 +53,7 @@ const updateSellerProfile = async (
 
 const deleteSellerProfile = async (sellerId: string) => {
   const deletedProfile = await SellerProfile.findOneAndUpdate(
-    { _id: sellerId },
+    { userId: sellerId },
     { status: "inactive", updatedAt: Date.now() },
     { new: true }
   );

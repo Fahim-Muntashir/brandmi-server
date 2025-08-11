@@ -7,6 +7,8 @@ import { AppError } from "../../middleware/globalErrorHandler";
 import OtpValidationModel from "../otpValidation/otpValidation.model";
 import { IUser, User } from "./user.model";
 import cloudinary from "../../config/cloudinary";
+import { SellerProfile } from "../SellerProfile/sellerProfile.module";
+import BuyerProfileModel from "../buyerProfile/buyerProfile.models";
 
 export const updateUser = async (
   userId: string,
@@ -53,7 +55,6 @@ export const updateUser = async (
     role: user.role,
   };
 };
-
 export const createUser = async (payload: IUser) => {
   // 1. Check if email already exists
   const existingUser = await User.findOne({ email: payload.email });
@@ -64,7 +65,7 @@ export const createUser = async (payload: IUser) => {
   // 2. Generate 6-digit OTP
   const otpCode = Math.floor(100000 + Math.random() * 900000);
 
-  // 3. Save user and OTP using Mongoose transaction
+  // 3. Start a Mongoose transaction
   const session = await User.startSession();
   session.startTransaction();
 
@@ -79,6 +80,30 @@ export const createUser = async (payload: IUser) => {
       googleId: payload.googleId,
       isverified: false,
     }).save({ session });
+
+    // Create profile based on role
+    if (newUser.role === "seller") {
+      await SellerProfile.create(
+        [
+          {
+            userId: newUser._id,
+            name: newUser.name,
+            status: "active",
+          },
+        ],
+        { session }
+      );
+    } else if (newUser.role === "buyer") {
+      await BuyerProfileModel.create(
+        [
+          {
+            userId: newUser._id,
+            name: newUser.name,
+          },
+        ],
+        { session }
+      );
+    }
 
     // Save OTP
     await new OtpValidationModel({
