@@ -44,7 +44,7 @@ const getAllSellerProfiles = catchAsync(
 
 const updateSellerProfile = catchAsync(async (req: Request, res: Response) => {
   const { sellerId } = req.params;
-
+  console.log(req.body);
   const updatedProfile = await SellerProfileService.updateSellerProfile(
     sellerId,
     req.body

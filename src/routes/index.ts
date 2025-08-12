@@ -6,8 +6,8 @@ import { BuyerProfileRoutes } from "../modules/buyerProfile/buyerProfile.routes"
 import { OrderRoutes } from "../modules/Order/order.routes";
 import { PaymentRoutes } from "../modules/payment/payment.route";
 import { SellerProfileRoutes } from "../modules/SellerProfile/sellerProfile.route";
-import { ServiceRoutes } from "../modules/Service/service.route";
 import { OtpValidationRoutes } from "../modules/otpValidation/otpValidation.routes";
+import { gigRoutes } from "../modules/gig/gig.route";
 
 // Define all routes in one config array for clarity and easy updates
 const routes = [
@@ -18,7 +18,7 @@ const routes = [
   { path: "/order", handler: OrderRoutes },
   { path: "/payment", handler: PaymentRoutes },
   { path: "/sellerProfile", handler: SellerProfileRoutes },
-  { path: "/services", handler: ServiceRoutes },
+  { path: "/gig", handler: gigRoutes },
   { path: "/otp", handler: OtpValidationRoutes }, // updated path to avoid conflict
 ];
 

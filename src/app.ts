@@ -13,7 +13,7 @@ const app: Application = express();
 
 const corsOptions = {
   origin: config.FRONTED_HOST,
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true,
 };
 

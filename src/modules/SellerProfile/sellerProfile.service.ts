@@ -12,10 +12,9 @@ const createSellerProfile = async (data: ISellerProfile) => {
 };
 
 const getSellerProfile = async (sellerId: string) => {
-  const sellerProfile = await SellerProfile.findOne({ _id: sellerId });
+  const sellerProfile = await SellerProfile.findOne({ userId: sellerId });
   // .populate('services')
   // .populate('portfolio');
-
   if (!sellerProfile) {
     throw new Error("Seller profile not found");
   }
@@ -32,6 +31,7 @@ const updateSellerProfile = async (
   sellerId: string,
   updates: Partial<ISellerProfile>
 ) => {
+  console.log(updates);
   if (!updates || Object.keys(updates).length === 0) {
     throw new Error("No update data provided");
   }
