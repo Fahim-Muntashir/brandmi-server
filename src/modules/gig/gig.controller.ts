@@ -82,10 +82,25 @@ const deleteService = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// Get all Gigs by Seller ID
+const getGigsBySeller = catchAsync(async (req: Request, res: Response) => {
+  const { sellerId } = req.params;
+  console.log(sellerId);
+  const gigs = await gigService.getGigsBySeller(sellerId);
+
+  sendResponse(res, {
+    status: 200,
+    success: true,
+    message: "Gigs retrieved successfully for the seller",
+    data: gigs,
+  });
+});
+
 export const gigController = {
   createService,
   getService,
   getAllServices,
   updateService,
   deleteService,
+  getGigsBySeller, // ✅ add here
 };

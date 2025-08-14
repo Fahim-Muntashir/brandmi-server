@@ -120,10 +120,20 @@ const deleteService = async (serviceId: string) => {
   return deletedService;
 };
 
+const getGigsBySeller = async (sellerId: string) => {
+  console.log("hello");
+  const gigs = await Gig.find({
+    userId: sellerId,
+    status: { $ne: "deleted" },
+  });
+  return gigs;
+};
+
 export const gigService = {
   createGig,
   getService,
   getAllServices,
   updateService,
   deleteService,
+  getGigsBySeller, // ✅ add here
 };

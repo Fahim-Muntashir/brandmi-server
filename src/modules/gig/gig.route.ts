@@ -16,6 +16,9 @@ router.get("/", gigController.getAllServices);
 // Update Service
 router.put("/:serviceId", gigController.updateService);
 
+// Get all services by seller
+router.get("/sellergigs/:sellerId", gigController.getGigsBySeller);
+
 // Soft Delete Service
 router.delete("/:serviceId", gigController.deleteService);
 
