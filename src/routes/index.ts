@@ -18,7 +18,7 @@ const routes = [
   { path: "/order", handler: OrderRoutes },
   { path: "/payment", handler: PaymentRoutes },
   { path: "/sellerProfile", handler: SellerProfileRoutes },
-  { path: "/gig", handler: gigRoutes },
+  { path: "/gigs", handler: gigRoutes },
   { path: "/otp", handler: OtpValidationRoutes }, // updated path to avoid conflict
 ];
 

@@ -8,16 +8,23 @@ interface Package {
   features: string[]; // List of features in the package
 }
 
+export type GigStatus = "deleted" | "pending" | "pause" | "active";
+
 export interface IGig extends Document {
   title: string;
-  description: string;
+  description: {
+    description: string;
+    faqs: string[];
+    requirements: string[];
+  };
   category: string;
   tags: string[];
-  packages: Package[]; // Array of packages (basic, premium, etc.)
+  pricing: Package[]; // Array of packages (basic, premium, etc.)
   averageRating: number;
   totalReviews: number;
   images: string[]; // Array to store image URLs for service
-  sellerId: Types.ObjectId; // Reference to the Seller
+  userId: Types.ObjectId; // Reference to the Seller
+  status?: GigStatus; // optional when creating, defaults to pending
   createdAt: Date;
   updatedAt: Date;
 }

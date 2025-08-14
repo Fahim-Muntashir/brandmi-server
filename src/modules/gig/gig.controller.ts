@@ -3,11 +3,24 @@ import { gigService } from "./gig.service";
 import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
 
-// Create a new Service
-const createService = catchAsync(async (req: Request, res: Response) => {
-  const serviceData = req.body;
-  const newService = await gigService.createService(serviceData);
+import { IGig } from "./gig.interface";
 
+const createService = catchAsync(async (req: Request, res: Response) => {
+  const files = req.files as Express.Multer.File[];
+  if (!req.body) {
+    throw new Error("No gig data provided");
+  }
+
+  // Parse the main gigData object
+  let payload: any = req.body;
+  // If pricing is still a stringified JSON, parse it
+  if (typeof payload.pricing === "string") {
+    const parsedPricing = JSON.parse(payload.pricing);
+    payload.pricing = parsedPricing.pricing; // pick the nested "pricing" object
+  }
+
+  const newService = await gigService.createGig(payload, files);
+  console.log(newService);
   sendResponse(res, {
     status: 201,
     success: true,

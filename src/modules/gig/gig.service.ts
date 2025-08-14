@@ -1,12 +1,63 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import cloudinary from "../../config/cloudinary";
+import { UploadApiResponse } from "cloudinary";
 import { AppError } from "../../middleware/globalErrorHandler";
 import { AggregationQueryBuilder } from "../../queryBuilder/QueryBuilder";
 import { IGig } from "./gig.interface";
 import { Gig } from "./gig.module";
+let uploadedImages: string[] = [];
 
-const createService = async (data: IGig) => {
-  const newService = new Gig(data);
-  return await newService.save();
+const createGig = async (
+  payload: Omit<IGig, "images">,
+  files?: Express.Multer.File[]
+) => {
+  const uploadedImages: string[] = [];
+
+  console.log(payload, files);
+
+  // Upload images if provided
+  if (files?.length) {
+    for (const file of files.slice(0, 3)) {
+      const uploadResult = await new Promise<UploadApiResponse>(
+        (resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            { folder: "gig_images" },
+            (error: any, result?: UploadApiResponse) => {
+              if (error)
+                return reject(new AppError("Image upload failed", 500));
+              if (!result)
+                return reject(
+                  new AppError("No result returned from Cloudinary", 500)
+                );
+              resolve(result);
+            }
+          );
+          stream.end(file.buffer);
+        }
+      );
+
+      uploadedImages.push(uploadResult.secure_url);
+    }
+  }
+
+  try {
+    console.log("Payload before save:", payload);
+    console.log("Uploaded images:", uploadedImages);
+
+    const newService = new Gig({
+      ...payload,
+      images: uploadedImages,
+      status: payload.status ?? "pending", // ✅ Ensure status defaults to "pending"
+    });
+
+    const createdGig = await newService.save();
+    console.log("Saved gig:", createdGig);
+
+    return createdGig;
+  } catch (err) {
+    console.error("Error saving gig:", err);
+    throw err;
+  }
 };
 
 const getService = async (serviceId: string) => {
@@ -70,7 +121,7 @@ const deleteService = async (serviceId: string) => {
 };
 
 export const gigService = {
-  createService,
+  createGig,
   getService,
   getAllServices,
   updateService,

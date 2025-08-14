@@ -15,31 +15,34 @@ const gigSchema = new Schema<IGig>(
       type: String,
       required: true,
     },
+
     tags: {
       type: [String],
       default: [],
     },
-    packages: [
-      {
-        type: {
-          type: String,
-          enum: ["basic", "Standard", "premium"],
-          required: true,
-        },
-        price: {
-          type: Number,
-          required: true,
-        },
-        duration: {
-          type: String,
-          required: true,
-        },
-        features: {
-          type: [String],
-          required: true,
-        },
+    pricing: {
+      basicPackage: {
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        deliveryTime: { type: Number, required: true },
+        price: { type: Number, required: true },
+        revisions: { type: Number, required: true },
       },
-    ],
+      standardPackage: {
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        deliveryTime: { type: Number, required: true },
+        price: { type: Number, required: true },
+        revisions: { type: Number, required: true },
+      },
+      premiumPackage: {
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        deliveryTime: { type: Number, required: true },
+        price: { type: Number, required: true },
+        revisions: { type: Number, required: true },
+      },
+    },
     averageRating: {
       type: Number,
       default: 0,
@@ -49,17 +52,22 @@ const gigSchema = new Schema<IGig>(
       default: 0,
     },
     images: {
-      type: [String], // Array of image URLs (service-related images)
+      type: [String],
       default: [],
     },
-    sellerId: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "SellerProfile",
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["deleted", "pending", "pause", "active"],
+      default: "pending",
+    },
   },
   {
-    timestamps: true, // Automatically manage createdAt and updatedAt
+    timestamps: true,
   }
 );
 

@@ -1,10 +1,11 @@
 import express from "express";
 import { gigController } from "./gig.controller";
+import { upload } from "../../middleware/upload";
 
 const router = express.Router();
 
 // Create Service
-router.post("/", gigController.createService);
+router.post("/", upload.array("images"), gigController.createService);
 
 // Get a specific Service
 router.get("/:serviceId", gigController.getService);
