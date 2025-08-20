@@ -8,7 +8,7 @@ interface Package {
   features: string[]; // List of features in the package
 }
 
-export type GigStatus = "deleted" | "pending" | "pause" | "active";
+export type GigStatus = "deleted" | "pending" | "paused" | "active";
 
 export interface IGig extends Document {
   title: string;

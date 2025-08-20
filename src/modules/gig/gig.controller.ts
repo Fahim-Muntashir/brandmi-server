@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { gigService } from "./gig.service";
 import { catchAsync } from "../../helpers/catchAsync";
 import { sendResponse } from "../../helpers/sendResponse";
-
-import { IGig } from "./gig.interface";
+import { AppError } from "../../middleware/globalErrorHandler";
 
 const createService = catchAsync(async (req: Request, res: Response) => {
   const files = req.files as Express.Multer.File[];
@@ -20,7 +19,6 @@ const createService = catchAsync(async (req: Request, res: Response) => {
   }
 
   const newService = await gigService.createGig(payload, files);
-  console.log(newService);
   sendResponse(res, {
     status: 201,
     success: true,
@@ -85,7 +83,6 @@ const deleteService = catchAsync(async (req: Request, res: Response) => {
 // Get all Gigs by Seller ID
 const getGigsBySeller = catchAsync(async (req: Request, res: Response) => {
   const { sellerId } = req.params;
-  console.log(sellerId);
   const gigs = await gigService.getGigsBySeller(sellerId);
 
   sendResponse(res, {
@@ -96,11 +93,33 @@ const getGigsBySeller = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const changeGigStatus = catchAsync(async (req: Request, res: Response) => {
+  const { gigId } = req.params;
+  const { status } = req.body;
+
+  console.log(req.body.data);
+  console.log(gigId, status);
+
+  if (!["deleted", "pending", "paused", "active"].includes(status)) {
+    throw new AppError("Invalid status value", 400);
+  }
+
+  const updatedGig = await gigService.changeGigStatus(gigId, status);
+
+  sendResponse(res, {
+    status: 200,
+    success: true,
+    message: "Gig status updated successfully",
+    data: updatedGig,
+  });
+});
+
 export const gigController = {
   createService,
   getService,
   getAllServices,
   updateService,
   deleteService,
-  getGigsBySeller, // ✅ add here
+  getGigsBySeller,
+  changeGigStatus, // ✅ added
 };

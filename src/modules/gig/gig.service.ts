@@ -5,15 +5,13 @@ import { AppError } from "../../middleware/globalErrorHandler";
 import { AggregationQueryBuilder } from "../../queryBuilder/QueryBuilder";
 import { IGig } from "./gig.interface";
 import { Gig } from "./gig.module";
-let uploadedImages: string[] = [];
+import { generateGigWithThumbnail } from "../../utils/aiGigGenerator";
 
 const createGig = async (
   payload: Omit<IGig, "images">,
   files?: Express.Multer.File[]
 ) => {
   const uploadedImages: string[] = [];
-
-  console.log(payload, files);
 
   // Upload images if provided
   if (files?.length) {
@@ -41,17 +39,13 @@ const createGig = async (
   }
 
   try {
-    console.log("Payload before save:", payload);
-    console.log("Uploaded images:", uploadedImages);
-
     const newService = new Gig({
       ...payload,
       images: uploadedImages,
-      status: payload.status ?? "pending", // ✅ Ensure status defaults to "pending"
+      status: payload.status ?? "active", // ✅ Ensure status defaults to "pending"
     });
 
     const createdGig = await newService.save();
-    console.log("Saved gig:", createdGig);
 
     return createdGig;
   } catch (err) {
@@ -72,25 +66,51 @@ const getAllServices = async (query: Record<string, unknown>) => {
   const projection = {
     title: 1,
     category: 1,
-    packages: 1,
+    pricing: 1,
+    images: 1,
   };
 
-  const queryHandler = new AggregationQueryBuilder<IGig>(query, Gig);
+  const queryHandler = new AggregationQueryBuilder(query, Gig);
 
   queryHandler
     .search(["title"])
-    .filter(["title"])
+    .filter(["title", "category"])
     .sort()
     .pagination()
     .applyProject(projection);
-  const services = await queryHandler.execute();
-  const metaData = await queryHandler.metaData();
+
+  let services = await queryHandler.execute();
+  let metaData = await queryHandler.metaData();
+
+  // If no gig found, generate a new one
+  if (services.length === 0) {
+    console.log("No gig found. Generating a new one using AI...");
+
+    const aiGig = await generateGigWithThumbnail(
+      (query.searchTerm as string) || "Default Gig",
+      (query.category as string) || "General"
+    );
+
+    const newGig = await Gig.create(aiGig);
+
+    services = [newGig];
+    metaData = {
+      totalDocuments: 1,
+      filterResult: 1,
+      limitPage: 1,
+      currentPage: 1,
+      totalPage: 1,
+      hasNextPage: false,
+    };
+  }
 
   return {
     data: services,
-    metaData: metaData,
+    metaData,
   };
 };
+
+export default getAllServices;
 
 const updateService = async (serviceId: string, updates: Partial<IGig>) => {
   const updatedService = await Gig.findByIdAndUpdate(
@@ -121,12 +141,28 @@ const deleteService = async (serviceId: string) => {
 };
 
 const getGigsBySeller = async (sellerId: string) => {
-  console.log("hello");
   const gigs = await Gig.find({
     userId: sellerId,
     status: { $ne: "deleted" },
   });
   return gigs;
+};
+
+const changeGigStatus = async (
+  gigId: string,
+  status: "deleted" | "pending" | "paused" | "active"
+) => {
+  const updatedGig = await Gig.findByIdAndUpdate(
+    gigId,
+    { status, updatedAt: Date.now() },
+    { new: true }
+  );
+
+  if (!updatedGig) {
+    throw new AppError("Gig not found", 404);
+  }
+
+  return updatedGig;
 };
 
 export const gigService = {
@@ -135,5 +171,6 @@ export const gigService = {
   getAllServices,
   updateService,
   deleteService,
-  getGigsBySeller, // ✅ add here
+  getGigsBySeller,
+  changeGigStatus, //
 };

@@ -62,7 +62,7 @@ const gigSchema = new Schema<IGig>(
     },
     status: {
       type: String,
-      enum: ["deleted", "pending", "pause", "active"],
+      enum: ["deleted", "pending", "paused", "active"],
       default: "pending",
     },
   },
